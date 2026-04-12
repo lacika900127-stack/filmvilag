@@ -166,7 +166,7 @@ footer span{color:var(--red)}
   </div>
 </main>
 
-<footer>© 2024 <span>FilmVilág</span> – Minden jog fentartva.</footer>
+<footer>© 2024 <span>FilmVilág</span> – Minden jog fenntartva.</footer>
 
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
@@ -270,7 +270,7 @@ footer span{color:var(--red)}
 
       <div id="tabSettings" style="display:none">
         <div class="alert" id="settingsAlert"></div>
-        <button class="btn btn-ghost" onclick="exportData()">Adatok mentése (JSON)</button>
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1rem;">Itt kezelheted az oldal alapbeállításait.</p>
       </div>
     </div>
   </div>
@@ -278,9 +278,9 @@ footer span{color:var(--red)}
 
 <script>
 // --- KONFIGURÁCIÓ ---
-const ADMIN_PASSWORD = "jelszó12"; // Pontosan ez a jelszó
+const ADMIN_PASSWORD = "jelszó12"; // ÁTÍRVA: Jelszó módosítva
 
-// --- ADATOK ---
+// --- ADATOK KEZELÉSE ---
 let films = JSON.parse(localStorage.getItem('filmVilagData')) || [];
 let currentFilm = null;
 
@@ -289,7 +289,7 @@ function save() {
     renderAll();
 }
 
-// --- ADMIN ---
+// --- ADMIN FUNKCIÓK ---
 function openAdminAuth() {
     document.getElementById('pwOverlay').classList.add('open');
     document.getElementById('pwInput').focus();
@@ -302,7 +302,8 @@ function closePw() {
 }
 
 function checkPw() {
-    if (document.getElementById('pwInput').value === ADMIN_PASSWORD) {
+    const input = document.getElementById('pwInput').value;
+    if (input === ADMIN_PASSWORD) {
         closePw();
         document.getElementById('adminOverlay').classList.add('open');
         renderAdminList();
@@ -321,120 +322,243 @@ function adminTab(tab, btn) {
     document.getElementById('tabAdd').style.display = tab === 'add' ? 'block' : 'none';
     document.getElementById('tabList').style.display = tab === 'list' ? 'block' : 'none';
     document.getElementById('tabSettings').style.display = tab === 'settings' ? 'block' : 'none';
-    if(tab==='list') renderAdminList();
+    if(tab === 'list') renderAdminList();
 }
 
 function addFilm() {
-    const t = document.getElementById('fTitle').value;
-    const v = document.getElementById('fVideo').value;
-    if(!t || !v) return showAlert('addAlert', 'Cím és videó kötelező!', 'err');
+    const title = document.getElementById('fTitle').value;
+    const video = document.getElementById('fVideo').value;
 
-    const f = {
+    if(!title || !video) {
+        showAlert('addAlert', 'A cím és a videó link kötelező!', 'err');
+        return;
+    }
+
+    const newFilm = {
         id: Date.now(),
-        title: t,
-        year: document.getElementById('fYear').value || '?',
+        title,
+        year: document.getElementById('fYear').value || 'N/A',
         genre: document.getElementById('fGenre').value,
         type: document.getElementById('fType').value,
         rating: document.getElementById('fRating').value || '?',
         quality: document.getElementById('fQuality').value,
-        duration: document.getElementById('fDuration').value || '?',
+        duration: document.getElementById('fDuration').value || 'N/A',
         emoji: document.getElementById('fEmoji').value || '🎬',
         poster: document.getElementById('fPoster').value,
-        video: v,
+        video: video,
         desc: document.getElementById('fDesc').value,
         featured: document.getElementById('fFeatured').value === "1"
     };
-    if(f.featured) films.forEach(x => x.featured = false);
-    films.push(f);
+
+    if (newFilm.featured) {
+        films.forEach(f => f.featured = false);
+    }
+
+    films.push(newFilm);
     save();
     clearForm();
-    showAlert('addAlert', 'Sikeresen hozzáadva!', 'ok');
+    showAlert('addAlert', 'Film sikeresen hozzáadva!', 'ok');
 }
 
 function clearForm() {
     document.querySelectorAll('.admin-panel input, .admin-panel textarea').forEach(i => i.value = '');
 }
 
-function showAlert(id, m, type) {
+function showAlert(id, msg, type) {
     const a = document.getElementById(id);
-    a.innerText = m; a.className = 'alert show ' + type;
+    a.innerText = msg;
+    a.className = 'alert show ' + type;
     setTimeout(() => a.classList.remove('show'), 3000);
 }
 
 function renderAdminList() {
-    const c = document.getElementById('adminFilmList');
-    c.innerHTML = '';
-    if(!films.length) { document.getElementById('adminEmpty').style.display = 'block'; return; }
+    const container = document.getElementById('adminFilmList');
+    container.innerHTML = '';
+    if(films.length === 0) {
+        document.getElementById('adminEmpty').style.display = 'block';
+        return;
+    }
     document.getElementById('adminEmpty').style.display = 'none';
+    
     films.forEach(f => {
-        const d = document.createElement('div');
-        d.className = 'fli';
-        d.innerHTML = `<span>${f.emoji}</span><div class="fli-info"><b>${f.title}</b></div><button class="fli-del" onclick="del(${f.id})">Törlés</button>`;
-        c.appendChild(d);
+        const div = document.createElement('div');
+        div.className = 'fli';
+        div.innerHTML = `
+            <div class="fli-emoji">${f.emoji}</div>
+            <div class="fli-info">
+                <div class="fli-title">${f.title}</div>
+                <div class="fli-meta">${f.year} • ${f.genre}</div>
+            </div>
+            <button class="fli-del" onclick="deleteFilm(${f.id})">Törlés</button>
+        `;
+        container.appendChild(div);
     });
 }
 
-function del(id) {
-    if(confirm('Biztos?')) { films = films.filter(f => f.id !== id); save(); renderAdminList(); }
+function deleteFilm(id) {
+    if(confirm('Biztosan törlöd?')) {
+        films = films.filter(f => f.id !== id);
+        save();
+        renderAdminList();
+    }
 }
 
 // --- MEGJELENÍTÉS ---
 function renderAll() {
-    const s = document.getElementById('mainSections');
-    s.innerHTML = '';
-    const feat = films.find(f => f.featured) || films[0];
-    if(feat) {
-        document.getElementById('heroTitle').innerText = feat.title;
-        document.getElementById('heroDesc').innerText = feat.desc;
-        document.getElementById('heroBtn').style.display = 'block';
-        document.getElementById('heroBtn').onclick = () => openModal(feat);
-        if(feat.poster) {
-            document.getElementById('heroBgImg').src = feat.poster;
+    const main = document.getElementById('mainSections');
+    main.innerHTML = '';
+    
+    // Hero beállítása
+    const featured = films.find(f => f.featured) || films[0];
+    if(featured) {
+        document.getElementById('heroTitle').innerText = featured.title;
+        document.getElementById('heroDesc').innerText = featured.desc || 'Nincs leírás.';
+        document.getElementById('heroBtn').style.display = 'inline-flex';
+        document.getElementById('heroBtn').onclick = () => openModal(featured);
+        if(featured.poster) {
+            document.getElementById('heroBgImg').src = featured.poster;
             document.getElementById('heroBgImg').style.display = 'block';
+        } else {
+            document.getElementById('heroBgImg').style.display = 'none';
         }
+    } else {
+        document.getElementById('heroBtn').style.display = 'none';
+        document.getElementById('heroBgImg').style.display = 'none';
     }
-    const g = document.createElement('div');
-    g.className = 'grid';
+
+    // Rácsos nézet
+    const section = document.createElement('div');
+    section.className = 'section';
+    section.innerHTML = `
+        <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">Összes film</div></div>
+        <div class="grid" id="mainGrid"></div>
+    `;
+    main.appendChild(section);
+    
+    const grid = document.getElementById('mainGrid');
     films.forEach(f => {
-        const c = document.createElement('div');
-        c.className = 'card';
-        c.onclick = () => openModal(f);
-        c.innerHTML = `<div class="card-poster">${f.poster ? `<img src="${f.poster}">` : f.emoji}</div><div class="card-info"><b>${f.title}</b></div>`;
-        g.appendChild(c);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openModal(f);
+        card.innerHTML = `
+            <div class="card-poster">
+                ${f.poster ? `<img src="${f.poster}">` : `<div class="card-poster-emoji">${f.emoji}</div>`}
+                <div class="card-qual">${f.quality}</div>
+                <div class="card-star">★ ${f.rating}</div>
+            </div>
+            <div class="card-info">
+                <div class="card-title">${f.title}</div>
+                <div class="card-meta"><span>${f.year}</span><span class="card-gtag">${f.genre}</span></div>
+            </div>
+        `;
+        grid.appendChild(card);
     });
-    s.appendChild(g);
 }
 
+// --- MODAL & LEJÁTSZÓ & NAVIGÁCIÓ ---
 function openModal(f) {
     currentFilm = f;
     document.getElementById('mTitle').innerText = f.title;
     document.getElementById('mDesc').innerText = f.desc;
+    document.getElementById('mEmoji').innerText = f.poster ? '' : f.emoji;
     document.getElementById('mPosterImg').src = f.poster || '';
     document.getElementById('mPosterImg').style.display = f.poster ? 'block' : 'none';
-    document.getElementById('mEmoji').innerText = f.poster ? '' : f.emoji;
     document.getElementById('overlay').classList.add('open');
 }
 
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+}
 
 function playCurrentFilm() {
     if(!currentFilm) return;
-    const p = document.getElementById('playerPage');
-    let url = currentFilm.video;
-    if(url.includes('youtube.com/watch?v=')) url = url.replace('watch?v=', 'embed/');
-    document.getElementById('playerWrap').innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    
+    // MODAL BEZÁRÁSA, de ne nullázzuk a filmet!
+    document.getElementById('overlay').classList.remove('open');
+    
+    const playerPage = document.getElementById('playerPage');
+    const wrap = document.getElementById('playerWrap');
+    
     document.getElementById('playerTitleBar').innerText = currentFilm.title;
-    p.classList.add('open');
-    closeModal();
+    document.getElementById('playerFilmTitle').innerText = currentFilm.title;
+    document.getElementById('playerDesc').innerText = currentFilm.desc;
+    
+    let url = currentFilm.video;
+    if(url.includes('youtube.com/watch?v=')) {
+        url = url.replace('watch?v=', 'embed/');
+    }
+
+    wrap.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    playerPage.classList.add('open');
 }
 
+// ÁTÍRVA: Lépcsőzetes visszalépés
 function closePlayer() {
     document.getElementById('playerPage').classList.remove('open');
     document.getElementById('playerWrap').innerHTML = '';
+    
+    // Ha volt aktuális film, nyissuk vissza a modalt (visszalépés érzet)
+    if (currentFilm) {
+        document.getElementById('overlay').classList.add('open');
+    }
 }
 
-function goHome() { closePlayer(); closeAdmin(); }
+// ÁTÍRVA: Okosabb logó navigáció
+function goHome() {
+    if (document.getElementById('playerPage').classList.contains('open')) {
+        closePlayer();
+    } else if (document.getElementById('overlay').classList.contains('open')) {
+        closeModal();
+    } else if (document.getElementById('adminOverlay').classList.contains('open')) {
+        closeAdmin();
+    }
+}
 
+function overlayClick(e) {
+    if(e.target.id === 'overlay') closeModal();
+}
+
+function heroPlay() {
+    const featured = films.find(f => f.featured) || films[0];
+    if(featured) openModal(featured);
+}
+
+function doFilter() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    if(!val) {
+        document.getElementById('mainSections').style.display = 'block';
+        document.getElementById('filteredSection').style.display = 'none';
+        return;
+    }
+    
+    document.getElementById('mainSections').style.display = 'none';
+    document.getElementById('filteredSection').style.display = 'block';
+    
+    const grid = document.getElementById('filtGrid');
+    grid.innerHTML = '';
+    const filtered = films.filter(f => f.title.toLowerCase().includes(val));
+    
+    if(filtered.length === 0) {
+        document.getElementById('emptyMsg').style.display = 'block';
+    } else {
+        document.getElementById('emptyMsg').style.display = 'none';
+        filtered.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openModal(f);
+            card.innerHTML = `
+                <div class="card-poster">
+                    ${f.poster ? `<img src="${f.poster}">` : `<div class="card-poster-emoji">${f.emoji}</div>`}
+                    <div class="card-qual">${f.quality}</div>
+                </div>
+                <div class="card-info"><div class="card-title">${f.title}</div></div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+}
+
+// Indítás
 renderAll();
 </script>
 </body>
