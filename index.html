@@ -166,9 +166,8 @@ footer span{color:var(--red)}
   </div>
 </main>
 
-<footer>© 2024 <span>FilmVilág</span> – Minden jog fenntartva.</footer>
+<footer>© 2024 <span>FilmVilág</span> – Minden jog fentartva.</footer>
 
-<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
     <div class="modal-top" id="mTop">
@@ -188,7 +187,6 @@ footer span{color:var(--red)}
   </div>
 </div>
 
-<!-- PLAYER -->
 <div id="playerPage">
   <div class="player-header">
     <button class="back-btn" onclick="closePlayer()">← Vissza</button>
@@ -202,7 +200,6 @@ footer span{color:var(--red)}
   </div>
 </div>
 
-<!-- PASSWORD -->
 <div id="pwOverlay">
   <div class="pw-box">
     <div style="font-size:2.5rem;margin-bottom:0.5rem">🔐</div>
@@ -215,7 +212,6 @@ footer span{color:var(--red)}
   </div>
 </div>
 
-<!-- ADMIN -->
 <div id="adminOverlay">
   <div class="admin-panel">
     <div class="admin-header">
@@ -274,291 +270,172 @@ footer span{color:var(--red)}
 
       <div id="tabSettings" style="display:none">
         <div class="alert" id="settingsAlert"></div>
-        <div class="form-grid">
-          <div class="form-group form-full"><label>Oldal neve</label><input type="text" id="sSiteName" placeholder="FilmVilág"></div>
-          <div class="form-group form-full"><label>Új jelszó (hagyd üresen ha nem változtatsz)</label><input type="password" id="sNewPw" placeholder="Új jelszó..."></div>
-          <div class="form-group form-full"><label>Jelszó megerősítése</label><input type="password" id="sNewPw2" placeholder="Mégegyszer..."></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-red" onclick="saveSettings()">💾 Mentés</button></div>
-        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
-          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.8rem">⚠️ Veszélyes zóna</p>
-          <button class="btn" style="background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);color:var(--red)" onclick="clearAllFilms()">🗑 Összes film törlése</button>
-        </div>
+        <button class="btn btn-ghost" onclick="exportData()">Adatok mentése (JSON)</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const SK = "filmvilag_films", PWK = "filmvilag_pw", SNK = "filmvilag_site";
-const DEF_PW = "admin123";
-const GL = {akcio:"Akció",drama:"Dráma",vigjetek:"Vígjáték",thriller:"Thriller",horror:"Horror",scifi:"Sci-Fi",animacio:"Animáció",dokumentumfilm:"Doku",romantikus:"Romantikus",krimi:"Krimi",fantasy:"Fantasy",kaland:"Kaland"};
-const GE = {akcio:"🔥",drama:"🎭",vigjetek:"😂",thriller:"🔪",horror:"👻",scifi:"🚀",animacio:"🎨",dokumentumfilm:"📽",romantikus:"❤️",krimi:"🔍",fantasy:"🧙",kaland:"🗺️"};
-const GC = {akcio:"#e63946",drama:"#4a90d9",vigjetek:"#f4a261",thriller:"#9b59b6",horror:"#2ecc71",scifi:"#00b4d8",animacio:"#ff6b9d",dokumentumfilm:"#ffd60a",romantikus:"#ff85a1",krimi:"#a8dadc",fantasy:"#7bed9f",kaland:"#eccc68"};
-const gl=g=>GL[g]||g, gc=g=>GC[g]||"#1e1e30", ge=g=>GE[g]||"🎬";
+// --- KONFIGURÁCIÓ ---
+const ADMIN_PASSWORD = "jelszó12"; // Pontosan ez a jelszó
 
-let cat="mind", srch="", modalFilm=null, heroFilm=null;
+// --- ADATOK ---
+let films = JSON.parse(localStorage.getItem('filmVilagData')) || [];
+let currentFilm = null;
 
-function getFilms(){try{return JSON.parse(localStorage.getItem(SK))||[]}catch{return[]}}
-function saveFilms(f){localStorage.setItem(SK,JSON.stringify(f))}
-function getPw(){return localStorage.getItem(PWK)||DEF_PW}
-function getSN(){return localStorage.getItem(SNK)||"FilmVilág"}
-
-// HISTORY
-window.addEventListener("popstate",e=>{
-  const s=e.state;
-  if(document.getElementById("playerPage").classList.contains("open")){closePlayerSilent();}
-  else if(document.getElementById("overlay").classList.contains("open")){closeModalSilent();}
-});
-
-function init(){
-  renderCats(); renderHero(); renderMain();
-  history.replaceState({p:"home"},"");
+function save() {
+    localStorage.setItem('filmVilagData', JSON.stringify(films));
+    renderAll();
 }
 
-function renderCats(){
-  const films=getFilms();
-  const genres=[...new Set(films.map(f=>f.genre).filter(Boolean))];
-  let cats=[{k:"mind",l:"Összes"},{k:"film",l:"🎬 Film"},{k:"sorozat",l:"📺 Sorozat"}];
-  genres.forEach(g=>cats.push({k:g,l:ge(g)+" "+gl(g)}));
-  document.getElementById("catsBar").innerHTML=cats.map(c=>`<button class="cat${c.k===cat?" active":""}" onclick="setCat('${c.k}',this)">${c.l}</button>`).join("");
+// --- ADMIN ---
+function openAdminAuth() {
+    document.getElementById('pwOverlay').classList.add('open');
+    document.getElementById('pwInput').focus();
 }
 
-function renderHero(){
-  const films=getFilms();
-  const f=films.find(x=>x.featured)||films[0];
-  heroFilm=f;
-  if(!f){
-    document.getElementById("heroTitle").textContent=getSN();
-    document.getElementById("heroMeta").innerHTML="";
-    document.getElementById("heroDesc").textContent="Adj hozzá filmeket az admin panelen keresztül!";
-    document.getElementById("heroBtn").style.display="none";
-    document.getElementById("heroBgImg").style.display="none";
-    return;
-  }
-  document.getElementById("heroBtn").style.display="";
-  document.getElementById("heroTitle").textContent=f.title;
-  document.getElementById("heroDesc").textContent=f.desc||"";
-  document.getElementById("heroMeta").innerHTML=`<span class="rst">⭐ ${f.rating||"?"}</span><span class="tag">${f.year||""}</span>${f.duration?`<span class="tag">${f.duration}</span>`:""}<span class="tag">${gl(f.genre)}</span><span class="tag">${f.quality||"HD"}</span>`;
-  if(f.poster){const i=document.getElementById("heroBgImg");i.src=f.poster;i.style.display="block";}
-  else document.getElementById("heroBgImg").style.display="none";
+function closePw() {
+    document.getElementById('pwOverlay').classList.remove('open');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwErr').style.display = 'none';
 }
 
-function heroPlay(){if(heroFilm)openModal(heroFilm);}
-
-function makeCard(f){
-  const col=gc(f.genre), emoji=f.emoji||ge(f.genre);
-  const data=JSON.stringify(f).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;");
-  return `<div class="card" onclick='openModalData("${data}")'>
-    <div class="card-poster" style="background:linear-gradient(135deg,${col}33,#1a1a24)">
-      ${f.poster?`<img src="${f.poster}" onerror="this.style.display='none'" loading="lazy">`:""}
-      <span class="card-poster-emoji">${emoji}</span>
-      <span class="card-qual">${f.quality||"HD"}</span>
-      <span class="card-star">⭐ ${f.rating||"?"}</span>
-    </div>
-    <div class="card-info">
-      <div class="card-title">${f.title}</div>
-      <div class="card-meta"><span>${f.year||""}</span><span class="card-gtag">${gl(f.genre)}</span></div>
-    </div>
-  </div>`;
+function checkPw() {
+    if (document.getElementById('pwInput').value === ADMIN_PASSWORD) {
+        closePw();
+        document.getElementById('adminOverlay').classList.add('open');
+        renderAdminList();
+    } else {
+        document.getElementById('pwErr').style.display = 'block';
+    }
 }
 
-function openModalData(data){
-  try{openModal(JSON.parse(data.replace(/&quot;/g,'"')));}catch(e){console.error(e);}
+function closeAdmin() {
+    document.getElementById('adminOverlay').classList.remove('open');
 }
 
-function makeSection(title,list){
-  if(!list.length)return"";
-  return`<div class="section"><div class="sec-head"><div class="sec-bar"></div><div class="sec-title">${title}</div></div><div class="grid">${list.map(makeCard).join("")}</div></div>`;
+function adminTab(tab, btn) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tabAdd').style.display = tab === 'add' ? 'block' : 'none';
+    document.getElementById('tabList').style.display = tab === 'list' ? 'block' : 'none';
+    document.getElementById('tabSettings').style.display = tab === 'settings' ? 'block' : 'none';
+    if(tab==='list') renderAdminList();
 }
 
-function renderMain(){
-  const films=getFilms();
-  if(!films.length){document.getElementById("mainSections").innerHTML=`<div class="empty"><div class="empty-icon">🎬</div><p>Még nincs film feltöltve.<br>Kattints az ⚙️ Admin gombra!</p></div>`;return;}
-  const byDate=[...films].reverse();
-  const byRating=[...films].sort((a,b)=>(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0));
-  const series=films.filter(f=>f.type==="sorozat");
-  const featured=films.filter(f=>f.featured);
-  let html="";
-  if(featured.length)html+=makeSection("⭐ Kiemelt filmek",featured);
-  html+=makeSection("🆕 Legújabb feltöltések",byDate.slice(0,12));
-  if(byRating.length>0)html+=makeSection("🏆 Legjobban értékelt",byRating.slice(0,12));
-  if(series.length)html+=makeSection("📺 Sorozatok",series.slice(0,12));
-  document.getElementById("mainSections").innerHTML=html;
+function addFilm() {
+    const t = document.getElementById('fTitle').value;
+    const v = document.getElementById('fVideo').value;
+    if(!t || !v) return showAlert('addAlert', 'Cím és videó kötelező!', 'err');
+
+    const f = {
+        id: Date.now(),
+        title: t,
+        year: document.getElementById('fYear').value || '?',
+        genre: document.getElementById('fGenre').value,
+        type: document.getElementById('fType').value,
+        rating: document.getElementById('fRating').value || '?',
+        quality: document.getElementById('fQuality').value,
+        duration: document.getElementById('fDuration').value || '?',
+        emoji: document.getElementById('fEmoji').value || '🎬',
+        poster: document.getElementById('fPoster').value,
+        video: v,
+        desc: document.getElementById('fDesc').value,
+        featured: document.getElementById('fFeatured').value === "1"
+    };
+    if(f.featured) films.forEach(x => x.featured = false);
+    films.push(f);
+    save();
+    clearForm();
+    showAlert('addAlert', 'Sikeresen hozzáadva!', 'ok');
 }
 
-function renderFiltered(){
-  const films=getFilms();
-  const q=srch.toLowerCase();
-  const res=films.filter(f=>{
-    const mc=cat==="mind"||(cat==="film"&&f.type==="film")||(cat==="sorozat"&&f.type==="sorozat")||f.genre===cat;
-    const mq=!q||f.title.toLowerCase().includes(q)||(f.desc||"").toLowerCase().includes(q);
-    return mc&&mq;
-  });
-  document.getElementById("filtTitle").textContent=q?`"${srch}" – ${res.length} találat`:(ge(cat)+" "+gl(cat)).trim();
-  document.getElementById("filtGrid").innerHTML=res.map(makeCard).join("");
-  document.getElementById("emptyMsg").style.display=res.length?"none":"block";
+function clearForm() {
+    document.querySelectorAll('.admin-panel input, .admin-panel textarea').forEach(i => i.value = '');
 }
 
-function doFilter(){srch=document.getElementById("searchInput").value;cat="mind";document.querySelectorAll(".cat").forEach(b=>b.classList.remove("active"));const f=document.querySelector(".cat");if(f)f.classList.add("active");update();}
-function setCat(c,btn){cat=c;srch="";document.getElementById("searchInput").value="";document.querySelectorAll(".cat").forEach(b=>b.classList.remove("active"));if(btn)btn.classList.add("active");update();}
-
-function update(){
-  const isF=cat!=="mind"||srch!=="";
-  document.getElementById("hero").style.display=isF?"none":"block";
-  document.getElementById("mainSections").style.display=isF?"none":"block";
-  document.getElementById("filteredSection").style.display=isF?"block":"none";
-  if(isF)renderFiltered();
+function showAlert(id, m, type) {
+    const a = document.getElementById(id);
+    a.innerText = m; a.className = 'alert show ' + type;
+    setTimeout(() => a.classList.remove('show'), 3000);
 }
 
-function goHome(){cat="mind";srch="";document.getElementById("searchInput").value="";document.querySelectorAll(".cat").forEach(b=>b.classList.remove("active"));const f=document.querySelector(".cat");if(f)f.classList.add("active");update();history.pushState({p:"home"},"");}
-
-// MODAL
-function openModal(f){
-  modalFilm=f;
-  const emoji=f.emoji||ge(f.genre), col=gc(f.genre);
-  document.getElementById("mTop").style.background=`linear-gradient(135deg,${col}44,#0d1a2e)`;
-  if(f.poster){document.getElementById("mPosterImg").src=f.poster;document.getElementById("mPosterImg").style.display="block";document.getElementById("mEmoji").style.display="none";}
-  else{document.getElementById("mPosterImg").style.display="none";document.getElementById("mEmoji").style.display="block";document.getElementById("mEmoji").textContent=emoji;}
-  document.getElementById("mTitle").textContent=f.title;
-  document.getElementById("mDesc").textContent=f.desc||"Nincs leírás.";
-  document.getElementById("mMeta").innerHTML=`<span class="rst">⭐ ${f.rating||"?"}</span><span class="tag">${f.year||""}</span>${f.duration?`<span class="tag">${f.duration}</span>`:""}<span class="tag">${gl(f.genre)}</span><span class="tag">${f.quality||"HD"}</span><span class="tag">${f.type==="sorozat"?"📺 Sorozat":"🎬 Film"}</span>`;
-  document.getElementById("overlay").classList.add("open");
-  document.body.style.overflow="hidden";
-  history.pushState({p:"modal"},"");
+function renderAdminList() {
+    const c = document.getElementById('adminFilmList');
+    c.innerHTML = '';
+    if(!films.length) { document.getElementById('adminEmpty').style.display = 'block'; return; }
+    document.getElementById('adminEmpty').style.display = 'none';
+    films.forEach(f => {
+        const d = document.createElement('div');
+        d.className = 'fli';
+        d.innerHTML = `<span>${f.emoji}</span><div class="fli-info"><b>${f.title}</b></div><button class="fli-del" onclick="del(${f.id})">Törlés</button>`;
+        c.appendChild(d);
+    });
 }
 
-function closeModal(){closeModalSilent();history.back();}
-function closeModalSilent(){document.getElementById("overlay").classList.remove("open");document.body.style.overflow="";modalFilm=null;}
-function overlayClick(e){if(e.target.id==="overlay")closeModal();}
-function playCurrentFilm(){if(modalFilm)openPlayer(modalFilm);}
-
-// PLAYER
-function buildEmbed(url){
-  if(!url)return"<p style='color:var(--muted);padding:2rem;text-align:center'>Nincs videó link.</p>";
-  const yt=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if(yt)return`<iframe src="https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-  const dr=url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if(dr)return`<iframe src="https://drive.google.com/file/d/${dr[1]}/preview" allowfullscreen allow="autoplay"></iframe>`;
-  if(url.includes("drive.google.com/open?id=")){const id=url.split("id=")[1]?.split("&")[0];if(id)return`<iframe src="https://drive.google.com/file/d/${id}/preview" allowfullscreen allow="autoplay"></iframe>`;}
-  if(url.match(/\.(mp4|webm|ogg)(\?.*)?$/i))return`<video controls autoplay><source src="${url}"></video>`;
-  return`<iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+function del(id) {
+    if(confirm('Biztos?')) { films = films.filter(f => f.id !== id); save(); renderAdminList(); }
 }
 
-function openPlayer(f){
-  document.getElementById("playerTitleBar").textContent=f.title;
-  document.getElementById("playerFilmTitle").textContent=f.title;
-  document.getElementById("playerDesc").textContent=f.desc||"";
-  document.getElementById("playerWrap").innerHTML=buildEmbed(f.videoUrl);
-  document.getElementById("playerTags").innerHTML=`<span class="tag">⭐ ${f.rating||"?"}</span><span class="tag">${f.year||""}</span>${f.duration?`<span class="tag">${f.duration}</span>`:""}<span class="tag">${gl(f.genre)}</span>`;
-  closeModalSilent();
-  document.getElementById("playerPage").classList.add("open");
-  document.body.style.overflow="hidden";
-  history.pushState({p:"player"},"");
+// --- MEGJELENÍTÉS ---
+function renderAll() {
+    const s = document.getElementById('mainSections');
+    s.innerHTML = '';
+    const feat = films.find(f => f.featured) || films[0];
+    if(feat) {
+        document.getElementById('heroTitle').innerText = feat.title;
+        document.getElementById('heroDesc').innerText = feat.desc;
+        document.getElementById('heroBtn').style.display = 'block';
+        document.getElementById('heroBtn').onclick = () => openModal(feat);
+        if(feat.poster) {
+            document.getElementById('heroBgImg').src = feat.poster;
+            document.getElementById('heroBgImg').style.display = 'block';
+        }
+    }
+    const g = document.createElement('div');
+    g.className = 'grid';
+    films.forEach(f => {
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.onclick = () => openModal(f);
+        c.innerHTML = `<div class="card-poster">${f.poster ? `<img src="${f.poster}">` : f.emoji}</div><div class="card-info"><b>${f.title}</b></div>`;
+        g.appendChild(c);
+    });
+    s.appendChild(g);
 }
 
-function closePlayer(){closePlayerSilent();history.back();}
-function closePlayerSilent(){document.getElementById("playerPage").classList.remove("open");document.getElementById("playerWrap").innerHTML="";document.body.style.overflow="";}
-
-// ADMIN AUTH
-function openAdminAuth(){document.getElementById("pwInput").value="";document.getElementById("pwErr").style.display="none";document.getElementById("pwOverlay").classList.add("open");setTimeout(()=>document.getElementById("pwInput").focus(),100);}
-function closePw(){document.getElementById("pwOverlay").classList.remove("open");}
-function checkPw(){
-  if(document.getElementById("pwInput").value===getPw()){closePw();openAdmin();}
-  else{document.getElementById("pwErr").style.display="block";document.getElementById("pwInput").value="";document.getElementById("pwInput").focus();}
+function openModal(f) {
+    currentFilm = f;
+    document.getElementById('mTitle').innerText = f.title;
+    document.getElementById('mDesc').innerText = f.desc;
+    document.getElementById('mPosterImg').src = f.poster || '';
+    document.getElementById('mPosterImg').style.display = f.poster ? 'block' : 'none';
+    document.getElementById('mEmoji').innerText = f.poster ? '' : f.emoji;
+    document.getElementById('overlay').classList.add('open');
 }
 
-// ADMIN
-function openAdmin(){adminTab("add",document.querySelector(".admin-tab"));document.getElementById("sSiteName").value=getSN();document.getElementById("adminOverlay").classList.add("open");document.body.style.overflow="hidden";}
-function closeAdmin(){document.getElementById("adminOverlay").classList.remove("open");document.body.style.overflow="";}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
 
-function adminTab(tab,btn){
-  document.querySelectorAll(".admin-tab").forEach(b=>b.classList.remove("active"));
-  if(btn)btn.classList.add("active");
-  document.getElementById("tabAdd").style.display=tab==="add"?"block":"none";
-  document.getElementById("tabList").style.display=tab==="list"?"block":"none";
-  document.getElementById("tabSettings").style.display=tab==="settings"?"block":"none";
-  if(tab==="list")renderAdminList();
+function playCurrentFilm() {
+    if(!currentFilm) return;
+    const p = document.getElementById('playerPage');
+    let url = currentFilm.video;
+    if(url.includes('youtube.com/watch?v=')) url = url.replace('watch?v=', 'embed/');
+    document.getElementById('playerWrap').innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    document.getElementById('playerTitleBar').innerText = currentFilm.title;
+    p.classList.add('open');
+    closeModal();
 }
 
-function showAlert(id,msg,type){const el=document.getElementById(id);el.textContent=msg;el.className=`alert ${type} show`;setTimeout(()=>el.classList.remove("show"),3500);}
-
-function addFilm(){
-  const title=document.getElementById("fTitle").value.trim();
-  const videoUrl=document.getElementById("fVideo").value.trim();
-  if(!title){showAlert("addAlert","⚠️ A cím megadása kötelező!","err");return;}
-  if(!videoUrl){showAlert("addAlert","⚠️ A videó link megadása kötelező!","err");return;}
-  const featured=document.getElementById("fFeatured").value==="1";
-  const film={
-    id:Date.now(),title,
-    year:parseInt(document.getElementById("fYear").value)||new Date().getFullYear(),
-    genre:document.getElementById("fGenre").value,
-    type:document.getElementById("fType").value,
-    rating:parseFloat(document.getElementById("fRating").value)||0,
-    quality:document.getElementById("fQuality").value,
-    duration:document.getElementById("fDuration").value.trim(),
-    emoji:document.getElementById("fEmoji").value.trim(),
-    poster:document.getElementById("fPoster").value.trim(),
-    videoUrl,desc:document.getElementById("fDesc").value.trim(),
-    featured,addedAt:Date.now()
-  };
-  const films=getFilms();
-  if(featured)films.forEach(f=>f.featured=false);
-  films.push(film);
-  saveFilms(films);
-  showAlert("addAlert","✅ Film sikeresen hozzáadva!","ok");
-  clearForm();
-  renderCats();renderHero();renderMain();
+function closePlayer() {
+    document.getElementById('playerPage').classList.remove('open');
+    document.getElementById('playerWrap').innerHTML = '';
 }
 
-function clearForm(){
-  ["fTitle","fYear","fRating","fDuration","fEmoji","fPoster","fVideo","fDesc"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("fGenre").value="akcio";
-  document.getElementById("fType").value="film";
-  document.getElementById("fQuality").value="HD";
-  document.getElementById("fFeatured").value="0";
-}
+function goHome() { closePlayer(); closeAdmin(); }
 
-function renderAdminList(){
-  const films=getFilms();
-  if(!films.length){document.getElementById("adminFilmList").innerHTML="";document.getElementById("adminEmpty").style.display="block";return;}
-  document.getElementById("adminEmpty").style.display="none";
-  document.getElementById("adminFilmList").innerHTML=[...films].reverse().map(f=>`
-    <div class="fli">
-      <span class="fli-emoji">${f.emoji||ge(f.genre)}</span>
-      <div class="fli-info">
-        <div class="fli-title">${f.title}</div>
-        <div class="fli-meta">${f.year} · ${gl(f.genre)} · ⭐${f.rating||"?"}${f.featured?" · ⭐ Kiemelt":""}</div>
-      </div>
-      <button class="fli-del" onclick="deleteFilm(${f.id})">Törlés</button>
-    </div>`).join("");
-}
-
-function deleteFilm(id){
-  if(!confirm("Biztosan törölni szeretnéd?"))return;
-  saveFilms(getFilms().filter(f=>f.id!==id));
-  renderAdminList();renderCats();renderHero();renderMain();
-  showAlert("listAlert","🗑 Film törölve.","ok");
-}
-
-function saveSettings(){
-  const n=document.getElementById("sSiteName").value.trim();
-  const p1=document.getElementById("sNewPw").value;
-  const p2=document.getElementById("sNewPw2").value;
-  if(p1&&p1!==p2){showAlert("settingsAlert","⚠️ A két jelszó nem egyezik!","err");return;}
-  if(n)localStorage.setItem(SNK,n);
-  if(p1)localStorage.setItem(PWK,p1);
-  document.getElementById("sNewPw").value="";document.getElementById("sNewPw2").value="";
-  showAlert("settingsAlert","✅ Beállítások mentve!","ok");
-}
-
-function clearAllFilms(){
-  if(!confirm("FIGYELEM! Összes film törlésre kerül!"))return;
-  saveFilms([]);renderAdminList();renderCats();renderHero();renderMain();
-  showAlert("listAlert","🗑 Összes film törölve.","ok");
-}
-
-init();
+renderAll();
 </script>
 </body>
 </html>
