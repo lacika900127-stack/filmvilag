@@ -1,273 +1,563 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="metaTitle">FilmVilág – Magyar Film és Sorozat Katalógus</title>
-<meta name="description" id="metaDesc" content="A legjobb filmek és sorozatok egy helyen. Nézz filmeket ingyen magyarul.">
-<meta name="keywords" id="metaKeys" content="filmek, sorozatok, magyar, online film, ingyenes film">
-<meta name="robots" id="metaRobots" content="index, follow">
-<meta property="og:title" id="ogTitle" content="FilmVilág">
-<meta property="og:description" id="ogDesc" content="A legjobb filmek és sorozatok egy helyen.">
-<meta property="og:image" id="ogImage" content="">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
-  --red:#e63946;--gold:#ffd60a;
-  --text:#e8e8f0;--muted:#7a7a9a;
-  --border:rgba(255,255,255,0.08);
-  --accent:#e63946;
-}
-body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MovieStream - Filmelőzetesek</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* HEADER */
-header{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:58px;gap:0.8rem}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;white-space:nowrap;cursor:pointer}
-.logo span{color:var(--accent)}
-.header-right{display:flex;align-items:center;gap:0.6rem;flex:1;justify-content:flex-end}
-.search-wrap{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0 0.8rem;gap:0.4rem;flex:1;max-width:220px}
-.search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;width:100%;padding:0.45rem 0}
-.search-wrap input::placeholder{color:var(--muted)}
-.admin-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.4rem 0.8rem;font-size:0.8rem;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;transition:all 0.2s}
-.admin-btn:hover{color:var(--text)}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
 
-/* SLIDER */
-.slider-section{padding:1rem;border-bottom:1px solid var(--border);background:var(--bg2)}
-.slider-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem}
-.slider-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;display:flex;align-items:center;gap:0.5rem}
-.slider-title span{color:var(--accent)}
-.slider-nav{display:flex;gap:0.4rem}
-.slider-nav button{background:var(--bg3);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
-.slider-nav button:hover{background:var(--accent);border-color:var(--accent)}
-.slider-outer{overflow:hidden;position:relative}
-.slider-track{display:flex;gap:0.7rem;transition:transform 0.4s cubic-bezier(.4,0,.2,1)}
-.slider-card{flex:0 0 calc(25% - 0.53rem);min-width:0;cursor:pointer;border-radius:10px;overflow:hidden;background:var(--bg);border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;position:relative}
-@media(max-width:600px){.slider-card{flex:0 0 calc(50% - 0.35rem)}}
-.slider-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.5);border-color:rgba(230,57,70,0.4)}
-.slider-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1a1a24}
-.slider-poster-placeholder{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#1a1a24}
-.slider-info{padding:0.5rem 0.6rem}
-.slider-name{font-weight:700;font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.slider-meta{font-size:0.68rem;color:var(--muted)}
-.slider-qual{position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:0.58rem;font-weight:800;letter-spacing:1px;padding:0.15rem 0.4rem;border-radius:3px}
-.slider-star{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.75);color:var(--gold);font-size:0.68rem;font-weight:800;padding:0.15rem 0.4rem;border-radius:3px}
+        /* Scrollbar stílus */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
 
-/* AD BANNERS */
-.ad-slot{display:none;width:100%;text-align:center;padding:0.5rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.ad-slot.active{display:block}
-.ad-slot-inline{display:none;grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;min-height:80px;align-items:center;justify-content:center}
-.ad-slot-inline.active{display:flex}
+        /* Fejléc */
+        .navbar {
+            background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%);
+            backdrop-filter: blur(8px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid #222;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #E50914, #B81D24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .logo span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #aaa;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #1f1f1f;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #333;
+            transition: all 0.2s;
+        }
+        .search-box:focus-within {
+            border-color: #E50914;
+            box-shadow: 0 0 5px rgba(229,9,20,0.5);
+        }
+        .search-box i {
+            color: #aaa;
+            margin-right: 8px;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            width: 200px;
+        }
+        .search-box input::placeholder {
+            color: #777;
+        }
+        .user-icon {
+            background: #2a2a2a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .user-icon:hover {
+            background: #E50914;
+        }
 
-/* CATS */
-.cats{display:flex;gap:0.5rem;overflow-x:auto;padding:0.9rem 1rem;border-bottom:1px solid var(--border);scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.cat{padding:0.35rem 1rem;border-radius:20px;font-size:0.78rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--muted);white-space:nowrap;font-family:'Nunito',sans-serif;transition:all 0.2s}
-.cat.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+        /* Hero banner */
+        .hero {
+            background: radial-gradient(circle at 20% 30%, #1a1a2e, #0a0a0a);
+            padding: 3rem 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #222;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            max-width: 700px;
+        }
+        .hero p {
+            color: #ccc;
+            margin-top: 1rem;
+            max-width: 500px;
+        }
+        .badge {
+            display: inline-block;
+            background: #E50914;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
 
-/* MAIN */
-main{padding:1.2rem 1rem;max-width:1400px;margin:0 auto}
-.section{margin-bottom:2.5rem}
-.sec-head{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
-.sec-bar{width:4px;height:20px;background:var(--accent);border-radius:2px;flex-shrink:0}
-.sec-title{font-weight:800;font-size:1rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.9rem}
-@media(max-width:480px){.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
-.card{cursor:pointer;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s}
-.card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.5);border-color:rgba(230,57,70,0.4)}
-.card-poster{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;background:#1a1a24}
-.card-poster img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.card-qual{position:absolute;top:6px;left:6px;z-index:2;background:var(--accent);color:#fff;font-size:0.58rem;font-weight:800;letter-spacing:1px;padding:0.15rem 0.4rem;border-radius:3px}
-.card-star{position:absolute;top:6px;right:6px;z-index:2;background:rgba(0,0,0,0.75);color:var(--gold);font-size:0.68rem;font-weight:800;padding:0.15rem 0.4rem;border-radius:3px}
-.card-info{padding:0.65rem}
-.card-title{font-weight:700;font-size:0.82rem;margin-bottom:0.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card-meta{display:flex;gap:0.35rem;align-items:center;font-size:0.68rem;color:var(--muted)}
-.card-gtag{background:var(--bg3);padding:0.1rem 0.4rem;border-radius:3px;font-size:0.62rem}
+        /* Film grid */
+        .container {
+            padding: 1rem 2rem 3rem 2rem;
+        }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem 0;
+            border-left: 5px solid #E50914;
+            padding-left: 15px;
+        }
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .movie-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            z-index: 2;
+        }
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+            background: #0e0e0e;
+            transition: opacity 0.2s;
+        }
+        .movie-info {
+            padding: 0.8rem;
+        }
+        .movie-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .movie-year {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .play-icon {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+        }
+        .movie-card:hover .play-icon {
+            opacity: 1;
+        }
+        .play-icon i {
+            font-size: 2rem;
+            color: white;
+            text-shadow: 0 0 5px black;
+        }
 
-/* PLAYER PAGE */
-#playerPage{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;flex-direction:column;overflow-y:auto}
-#playerPage.open{display:flex}
-.player-header{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:rgba(10,10,15,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
-.back-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0.45rem 1rem;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:all 0.2s}
-.back-btn:hover{background:var(--accent);border-color:var(--accent)}
-.player-title-bar{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.player-wrap{width:100%;background:#000}
-.player-wrap iframe,.player-wrap video{width:100%;aspect-ratio:16/9;display:block;border:none}
-.player-info{padding:1.2rem 1rem}
-.player-film-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;margin-bottom:0.5rem}
-.player-tags{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem}
-.player-desc{color:var(--muted);line-height:1.7;font-size:0.9rem}
-.ad-preroll{display:none;position:relative;width:100%;background:#000;aspect-ratio:16/9}
-.ad-preroll.active{display:flex;align-items:center;justify-content:center}
-.ad-preroll-inner{width:100%;height:100%;position:relative}
-.ad-preroll-inner iframe{width:100%;height:100%;border:none}
-.skip-btn{position:absolute;bottom:16px;right:16px;background:rgba(0,0,0,0.8);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:6px;padding:0.5rem 1rem;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;z-index:10;transition:all 0.2s}
-.skip-btn:hover{background:var(--accent)}
-.skip-countdown{color:var(--muted)}
+        /* Modal (videólejátszó) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #111;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 arány */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .modal-info {
+            padding: 1.5rem;
+        }
+        .modal-info h2 {
+            margin-bottom: 0.5rem;
+        }
+        .modal-info p {
+            color: #bbb;
+            line-height: 1.4;
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            background: rgba(0,0,0,0.6);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            z-index: 1001;
+        }
+        .close-modal:hover {
+            background: #E50914;
+        }
 
-/* MODAL */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:1rem}
-.overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-top{position:relative;height:200px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#1a1a24}
-.modal-top img{width:100%;height:100%;object-fit:cover;opacity:0.6;position:absolute;inset:0}
-.modal-top-emoji{position:relative;z-index:1;font-size:5rem}
-.modal-close{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,0.65);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
-.modal-close:hover{background:var(--accent)}
-.modal-grad{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:1rem 1.2rem;background:linear-gradient(to top,var(--bg2),transparent)}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px}
-.modal-body{padding:1.2rem}
-.modal-meta{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
-.modal-desc{color:var(--muted);line-height:1.7;font-size:0.9rem;margin-bottom:1.3rem}
-.modal-btns{display:flex;gap:0.6rem;flex-wrap:wrap}
-.tag{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:0.15rem 0.6rem;font-size:0.72rem;color:#aaa}
-.rst{color:var(--gold);font-weight:800;font-size:0.95rem}
-.btn{padding:0.55rem 1.3rem;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem}
-.btn-red{background:var(--accent);color:#fff}.btn-red:hover{filter:brightness(1.15);transform:translateY(-1px)}
-.btn-ghost{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{background:rgba(255,255,255,0.14)}
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #aaa;
+        }
 
-/* PASSWORD */
-#pwOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:500;align-items:center;justify-content:center;padding:1rem}
-#pwOverlay.open{display:flex}
-.pw-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:340px;width:100%;text-align:center}
-.pw-box h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px;margin-bottom:0.3rem}
-.pw-box p{color:var(--muted);font-size:0.85rem;margin-bottom:1.2rem}
-.pw-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.7rem 1rem;color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;outline:none;width:100%;margin-bottom:0.8rem;text-align:center;letter-spacing:2px;transition:border-color 0.2s}
-.pw-input:focus{border-color:var(--accent)}
-.pw-err{color:var(--accent);font-size:0.82rem;margin-bottom:0.8rem;display:none}
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #222;
+            font-size: 0.8rem;
+            color: #666;
+        }
 
-/* ADMIN */
-#adminOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:400;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
-#adminOverlay.open{display:flex}
-.admin-panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:760px;margin:auto}
-.admin-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border)}
-.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px}
-.admin-body{padding:1.5rem}
-.admin-tabs{display:flex;gap:0.4rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.admin-tab{padding:0.4rem 0.8rem;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-family:'Nunito',sans-serif;transition:all 0.2s}
-.admin-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
-@media(max-width:500px){.form-grid{grid-template-columns:1fr}}
-.form-full{grid-column:1/-1}
-.form-group{display:flex;flex-direction:column;gap:0.3rem}
-.form-group label{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
-.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;width:100%}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group select option{background:var(--bg3)}
-.form-group textarea{resize:vertical;min-height:80px}
-.form-actions{display:flex;gap:0.6rem;margin-top:1rem;flex-wrap:wrap}
-.film-list{display:flex;flex-direction:column;gap:0.6rem;max-height:400px;overflow-y:auto}
-.fli{display:flex;align-items:center;gap:0.8rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem}
-.fli-emoji{font-size:1.5rem;flex-shrink:0}
-.fli-poster{width:36px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0}
-.fli-info{flex:1;min-width:0}
-.fli-title{font-weight:700;font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fli-meta{font-size:0.72rem;color:var(--muted)}
-.fli-del{background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);color:var(--accent);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.78rem;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;transition:all 0.2s;flex-shrink:0}
-.fli-del:hover{background:var(--accent);color:#fff}
-.alert{padding:0.7rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;margin-bottom:0.8rem;display:none}
-.alert.ok{background:rgba(46,213,115,0.15);border:1px solid rgba(46,213,115,0.3);color:#2ed573}
-.alert.err{background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);color:var(--accent)}
-.alert.show{display:block}
-.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
-.empty-icon{font-size:3rem;margin-bottom:0.5rem}
-
-/* AD MANAGER */
-.ad-manager-grid{display:flex;flex-direction:column;gap:1rem}
-.ad-block{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem}
-.ad-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem}
-.ad-block-title{font-weight:800;font-size:0.9rem;display:flex;align-items:center;gap:0.5rem}
-.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:#333;border-radius:24px;cursor:pointer;transition:0.3s}
-.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:0.3s}
-.toggle input:checked + .toggle-slider{background:var(--accent)}
-.toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
-.ad-positions{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.8rem}
-@media(max-width:480px){.ad-positions{grid-template-columns:1fr}}
-.ad-pos-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;font-size:0.82rem}
-
-/* DESIGN EDITOR */
-.design-grid{display:flex;flex-direction:column;gap:1rem}
-.design-block{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem}
-.design-block-title{font-weight:800;font-size:0.9rem;margin-bottom:0.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-size:0.78rem}
-.color-row{display:flex;gap:0.8rem;flex-wrap:wrap;align-items:center}
-.color-item{display:flex;flex-direction:column;gap:0.3rem;align-items:center;font-size:0.72rem;color:var(--muted)}
-.color-item input[type=color]{width:44px;height:44px;border:none;border-radius:8px;cursor:pointer;background:none;padding:0}
-.cats-editor{display:flex;flex-direction:column;gap:0.5rem}
-.cat-edit-item{display:flex;align-items:center;gap:0.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem}
-.cat-edit-item input{background:none;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;flex:1}
-.cat-edit-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;transition:color 0.2s}
-.cat-edit-del:hover{color:var(--accent)}
-.add-cat-row{display:flex;gap:0.5rem;margin-top:0.5rem}
-.add-cat-row input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;outline:none}
-.add-cat-row input:focus{border-color:var(--accent)}
-
-/* SEO */
-.seo-grid{display:flex;flex-direction:column;gap:0.8rem}
-
-footer{border-top:1px solid var(--border);padding:1.5rem;text-align:center;color:var(--muted);font-size:0.78rem}
-footer span{color:var(--accent)}
-</style>
+        @media (max-width: 640px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box input {
+                width: 100%;
+            }
+            .container {
+                padding: 0.5rem 1rem 2rem 1rem;
+            }
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="logo" id="siteLogo" onclick="goHome()">Film<span>Világ</span></div>
-  <div class="header-right">
-    <div class="search-wrap">
-      <span style="color:var(--muted)">🔍</span>
-      <input type="text" id="searchInput" placeholder="Keresés..." oninput="doFilter()">
+<nav class="navbar">
+    <div class="logo">MOVIESTREAM <span>| előzetesek</span></div>
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Film keresése...">
     </div>
-    <button class="admin-btn" onclick="openAdminAuth()">⚙️ Admin</button>
-  </div>
-</header>
-
-<!-- AD: Fejléc alatt banner -->
-<div class="ad-slot" id="adBannerTop"></div>
-
-<!-- SLIDER -->
-<div class="slider-section" id="sliderSection" style="display:none">
-  <div class="slider-head">
-    <div class="slider-title">🎬 <span>Kiemelt</span> &nbsp;filmek</div>
-    <div class="slider-nav">
-      <button onclick="sliderPrev()">‹</button>
-      <button onclick="sliderNext()">›</button>
+    <div class="user-icon">
+        <i class="fas fa-user"></i>
     </div>
-  </div>
-  <div class="slider-outer">
-    <div class="slider-track" id="sliderTrack"></div>
-  </div>
+</nav>
+
+<section class="hero">
+    <h1>Végtelen filmes élmény</h1>
+    <p>Nézd meg kedvenc filmed előzetesét, fedezz fel új történeteket. (Csak előzetesek – a teljes filmek streameléséhez jogi licencek szükségesek.)</p>
+    <div class="badge"><i class="fas fa-film"></i> 10+ kiemelt előzetes</div>
+</section>
+
+<div class="container">
+    <div class="section-title"><i class="fas fa-fire" style="margin-right: 10px; color:#E50914;"></i> Népszerű filmek</div>
+    <div id="moviesGrid" class="movies-grid">
+        <!-- A filmkártyák dinamikusan töltődnek be JavaScript segítségével -->
+    </div>
 </div>
 
-<!-- CATS -->
-<div class="cats" id="catsBar"></div>
+<footer>
+    <p>MovieStream Demo © 2025 – Csak bemutatási célra. Minden filmelőzetes jogtulajdonosa a YouTube. A teljes filmek streameléséhez szükséges jogokkal nem rendelkezünk.</p>
+</footer>
 
-<!-- AD: Kategóriák alatt -->
-<div class="ad-slot" id="adBannerMid"></div>
-
-<main>
-  <div id="mainSections"></div>
-  <div id="filteredSection" style="display:none">
-    <div class="section">
-      <div class="sec-head"><div class="sec-bar"></div><div class="sec-title" id="filtTitle">Találatok</div></div>
-      <div class="grid" id="filtGrid"></div>
-      <div class="empty" id="emptyMsg" style="display:none"><div class="empty-icon">🎬</div><p>Nem találtunk ilyen filmet.</p></div>
+<!-- Modal struktúra -->
+<div id="videoModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <div class="modal-content">
+        <div class="video-container">
+            <iframe id="trailerIframe" src="" allowfullscreen></iframe>
+        </div>
+        <div class="modal-info">
+            <h2 id="modalTitle"></h2>
+            <p id="modalDesc"></p>
+        </div>
     </div>
-  </div>
-</main>
+</div>
 
-<!-- AD: Footer felett -->
-<div class="ad-slot" id="adBannerBottom"></div>
+<script>
+    // ------------------- FILM ADATBÁZIS (előzetesek + poszterek) -------------------
+    // Valós TMDB poszter URL-ek és hivatalos YouTube előzetesek (csak promóciós célra)
+    const moviesData = [
+        {
+            id: 1,
+            title: "Eredet (Inception)",
+            year: 2010,
+            poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+            trailer: "https://www.youtube.com/embed/YoHD9XEInc0",
+            description: "Egy tolvaj, aki álmokból lopja el a titkokat, kap egy utolsó esélyt a bűnei lemosására: egy befolyásolás beültetésére egy célpont tudatalattijába."
+        },
+        {
+            id: 2,
+            title: "A Sötét Lovag (The Dark Knight)",
+            year: 2008,
+            poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+            trailer: "https://www.youtube.com/embed/EXeTwQWrcwY",
+            description: "Batman felveszi a harcot a Jokerrel, aki káoszt akar teremteni Gotham városában."
+        },
+        {
+            id: 3,
+            title: "Ponyvaregény (Pulp Fiction)",
+            year: 1994,
+            poster: "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
+            trailer: "https://www.youtube.com/embed/s7EdQ4FqbhY",
+            description: "Több, egymásba fonódó történet a Los Angeles-i alvilágból: bérgyilkosok, bokszoló, gengszterfeleség és egy furcsa pár."
+        },
+        {
+            id: 4,
+            title: "Mátrix (The Matrix)",
+            year: 1999,
+            poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+            trailer: "https://www.youtube.com/embed/vKQi3bBA1y8",
+            description: "Egy számítógépes hacker rájön, hogy a valóság valójában egy szimuláció, és kiválasztott hősként harcol a gépek ellen."
+        },
+        {
+            id: 5,
+            title: "Csillagok között (Interstellar)",
+            year: 2014,
+            poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+            trailer: "https://www.youtube.com/embed/zSWdZVtXT7E",
+            description: "Egy asztronauta-csapat az emberiség megmentéséért utazik egy féreglyukon át a galaxis másik végébe."
+        },
+        {
+            id: 6,
+            title: "Harcosok Klubja (Fight Club)",
+            year: 1999,
+            poster: "https://image.tmdb.org/t/p/w500/pB8BM7DSpv9e9NhaLFcH82cShSg.jpg",
+            trailer: "https://www.youtube.com/embed/SUXWAEX2jlg",
+            description: "Egy nihilista szappanárus és egy álmatlan irodista földalatti harcművészeti klubot alapít."
+        },
+        {
+            id: 7,
+            title: "Forrest Gump",
+            year: 1994,
+            poster: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9YnO3fsHz.jpg",
+            trailer: "https://www.youtube.com/embed/bLvqoHBptjg",
+            description: "Egy alacsony IQ-jú, de jószívű férfi hihetetlen életútja az amerikai történelem meghatározó eseményein keresztül."
+        },
+        {
+            id: 8,
+            title: "A Gyűrűk Ura: A Gyűrű Szövetsége",
+            year: 2001,
+            poster: "https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+            trailer: "https://www.youtube.com/embed/V75dMMIW2B4",
+            description: "Egy fiatal hobbit és nyolc társa indul, hogy megsemmisítse az Egy Gyűrűt Középfölde sötét ura birodalmának szívében."
+        },
+        {
+            id: 9,
+            title: "Gladiátor (Gladiator)",
+            year: 2000,
+            poster: "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgvimx.jpg",
+            trailer: "https://www.youtube.com/embed/owK1qxDselE",
+            description: "Egy meggyilkolt császár áruló fia által rabszolgává tett hadvezér a gladiátor arénában áll bosszút."
+        },
+        {
+            id: 10,
+            title: "Whiplash",
+            year: 2014,
+            poster: "https://image.tmdb.org/t/p/w500/6uUy2OkAgiupEhQJvMSm7c3cS3.jpg",
+            trailer: "https://www.youtube.com/embed/7d_jQycdQGo",
+            description: "Egy fiatal dobos és kegyetlen tanára közötti mester–tanítvány kapcsolat az őrülettel határos módszerekkel."
+        }
+    ];
 
-<footer>© 2024 <span id="footerName">FilmVilág</span> – Minden jog fenntartva.</footer>
+    // Globális változók
+    let currentMovies = [...moviesData];
+    const gridContainer = document.getElementById('moviesGrid');
+    const searchInput = document.getElementById('searchInput');
+    const modal = document.getElementById('videoModal');
+    const closeModalBtn = document.querySelector('.close-modal');
+    const trailerIframe = document.getElementById('trailerIframe');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
 
-<!-- MODAL -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal">
-    <div class="modal-top" id="mTop">
-      <img id="mPosterImg" src="" style="dis
+    // Kártyák megjelenítése
+    function renderMovies(movies) {
+        if (!gridContainer) return;
+        if (movies.length === 0) {
+            gridContainer.innerHTML = `<div class="no-results"><i class="fas fa-video-slash"></i> Nincs találat. Próbáld más címmel!</div>`;
+            return;
+        }
+
+        gridContainer.innerHTML = movies.map(movie => `
+            <div class="movie-card" data-id="${movie.id}">
+                <img class="movie-poster" src="${movie.poster}" alt="${movie.title}" loading="lazy" onerror="this.src='https://placehold.co/300x450/222/white?text=No+Poster'">
+                <div class="play-icon"><i class="fas fa-play-circle"></i></div>
+                <div class="movie-info">
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-year">${movie.year}</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Eseménykezelők a kártyákhoz (modal megnyitása)
+        document.querySelectorAll('.movie-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const id = parseInt(card.getAttribute('data-id'));
+                const selectedMovie = movies.find(m => m.id === id);
+                if (selectedMovie) {
+                    openModal(selectedMovie);
+                }
+            });
+        });
+    }
+
+    // Modal megnyitása az adott film előzetesével
+    function openModal(movie) {
+        modalTitle.innerText = `${movie.title} (${movie.year})`;
+        modalDesc.innerText = movie.description;
+        // YouTube embed URL hozzáadása (autoplay kikapcsolva, de a felhasználó indíthatja)
+        trailerIframe.src = movie.trailer;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Modal bezárása
+    function closeModal() {
+        modal.style.display = 'none';
+        trailerIframe.src = ''; // leállítjuk a videót
+        document.body.style.overflow = '';
+    }
+
+    // Szűrés keresés alapján
+    function filterMoviesBySearch() {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query === "") {
+            currentMovies = [...moviesData];
+        } else {
+            currentMovies = moviesData.filter(movie => movie.title.toLowerCase().includes(query));
+        }
+        renderMovies(currentMovies);
+    }
+
+    // Kattintás a modal bezárására (X vagy háttér)
+    closeModalBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    // ESC gombra is zárjuk
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+        }
+    });
+
+    // Keresés eseményfigyelő
+    searchInput.addEventListener('input', filterMoviesBySearch);
+
+    // Kezdeti render
+    renderMovies(moviesData);
+
+    // Kisebb kép hiba esetén placeholder
+    window.addEventListener('error', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.target.src = 'https://placehold.co/300x450/222/white?text=No+Poster';
+        }
+    }, true);
+</script>
+</body>
+</html>
