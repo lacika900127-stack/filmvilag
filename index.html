@@ -2,461 +2,205 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>FilmStream Pro - Filmvilág</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <title>FilmStream - filmek.json</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: #0a0a0a; color: #eee; }
-        .navbar {
-            background: #111; padding: 1rem 2rem; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #2c2c2c;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-size: 1.6rem; font-weight: bold; background: linear-gradient(135deg, #E50914, #ff4d4d); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-        .nav-links a { color: #ddd; text-decoration: none; cursor: pointer; }
-        .nav-links a:hover { color: #E50914; }
-        .user-panel { display: flex; gap: 1rem; align-items: center; }
-        button, .btn { background: #2c2c2c; border: none; color: white; padding: 0.4rem 1rem; border-radius: 30px; cursor: pointer; }
-        .btn-red { background: #E50914; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
-        .carousel-section { margin-bottom: 2rem; }
-        .carousel-container { position: relative; overflow: hidden; margin: 1rem 0; }
-        .carousel-track { display: flex; transition: transform 0.5s ease; gap: 1.5rem; }
-        .carousel-card { flex: 0 0 calc(20% - 1.2rem); min-width: 180px; background: #151515; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
-        .carousel-card:hover { transform: scale(1.02); }
-        .carousel-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .carousel-info { padding: 0.6rem; }
-        .carousel-title { font-weight: 600; font-size: 0.9rem; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: none; color: white; font-size: 2rem; padding: 0 1rem; cursor: pointer; border-radius: 30px; }
-        .carousel-btn-left { left: 5px; }
-        .carousel-btn-right { right: 5px; }
-        .categories-filter { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 1.5rem 0; }
-        .cat-btn { background: #222; padding: 0.5rem 1.2rem; border-radius: 40px; cursor: pointer; transition: 0.2s; }
-        .cat-btn.active, .cat-btn:hover { background: #E50914; }
-        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.8rem; margin-top: 1.5rem; }
-        .movie-card { background: #151515; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
-        .movie-card:hover { transform: scale(1.03); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui; }
+        body { background: #0a0a0a; color: #eee; padding: 1rem; }
+        .navbar { display: flex; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        button { background: #E50914; border: none; color: white; padding: 0.5rem 1rem; border-radius: 30px; cursor: pointer; }
+        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 1rem; }
+        .movie-card { background: #1a1a1a; border-radius: 12px; cursor: pointer; overflow: hidden; }
         .movie-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .movie-info { padding: 0.8rem; }
+        .movie-info { padding: 0.5rem; text-align: center; }
         .film-page { display: flex; gap: 2rem; flex-wrap: wrap; }
-        .film-main { flex: 2; min-width: 250px; }
-        .film-sidebar { flex: 1; min-width: 250px; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: black; margin-bottom: 1rem; }
-        .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .comment { background: #1a1a1a; padding: 0.8rem; border-radius: 10px; margin-top: 0.8rem; }
-        .admin-section { background: #111; padding: 1.5rem; border-radius: 20px; margin-top: 1rem; }
-        .reklam-item, .category-item { background: #222; padding: 1rem; margin: 1rem 0; border-radius: 12px; }
-        .ad-space { margin: 1rem 0; background: #1a1a1a; border: 1px dashed #E50914; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        input, textarea, select { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.5rem; border-radius: 8px; color: white; width: 100%; margin-bottom: 0.5rem; }
-        @media (max-width: 1000px) { .carousel-card { flex: 0 0 calc(25% - 1.2rem); } }
-        @media (max-width: 700px) { .carousel-card { flex: 0 0 calc(33% - 1rem); } .navbar { flex-direction: column; } }
-        @media (max-width: 500px) { .carousel-card { flex: 0 0 calc(50% - 0.8rem); } }
+        .video-wrapper iframe { width: 100%; aspect-ratio: 16/9; }
+        .admin-section { background: #111; padding: 1rem; margin-top: 1rem; border-radius: 12px; }
+        input, textarea { width: 100%; margin: 0.5rem 0; padding: 0.5rem; background: #222; color: white; border: none; border-radius: 8px; }
+        .back-button { margin-bottom: 1rem; display: inline-block; }
+        @media (max-width:700px){ .movies-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); } }
     </style>
 </head>
 <body>
-
 <div class="navbar">
-    <div class="logo">🎬 FilmStream PRO</div>
-    <div class="nav-links">
-        <a onclick="navigateTo('home')">🏠 Főoldal</a>
-        <a onclick="navigateTo('admin')">🔧 Admin</a>
+    <div style="font-size:1.5rem;">🎬 FilmStream</div>
+    <div>
+        <button onclick="location.hash='admin'">Admin</button>
+        <button onclick="location.hash='home'">Főoldal</button>
     </div>
-    <div class="user-panel" id="userPanel"></div>
 </div>
-
-<div id="appRoot" class="container"></div>
+<div id="app"></div>
 
 <script>
-    // Firebase konfiguráció (a te adataid)
-    const firebaseConfig = {
-        apiKey: "AIzaSyDvF36JPo1loFG_yZZrqfoe0WsYBwRviC8",
-        authDomain: "filvilag-pro.firebaseapp.com",
-        projectId: "filvilag-pro",
-        storageBucket: "filvilag-pro.firebasestorage.app",
-        messagingSenderId: "755209018055",
-        appId: "1:755209018055:web:efc323f96884046c2efce2",
-        measurementId: "G-9Y4168GCBM"
-    };
+let movies = [];
+let categories = ['Akció', 'Dráma', 'Sci-fi'];
+let currentUser = null;
 
-    // Inicializálás
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    // Referenciák
-    const moviesRef = db.collection('movies');
-    const categoriesRef = db.collection('categories');
-    const adsRef = db.collection('ads');
-    const usersRef = db.collection('users');
-    const commentsRef = db.collection('comments');
-    const likesRef = db.collection('likes');
-
-    // Globális állapot
-    let currentUser = null;
-    let currentView = 'home';
-    let selectedMovieId = null;
-    let carouselInterval = null;
-    let currentCarouselIndex = 0;
-    let activeCategoryId = null;
-
-    // ---------- Segédfüggvények ----------
-    async function loadDefaultData() {
-        const catSnap = await categoriesRef.get();
-        if(catSnap.empty) {
-            const defaultCats = ['Akció', 'Dráma', 'Vígjáték', 'Sci-fi'];
-            for(let name of defaultCats) {
-                await categoriesRef.add({ name, createdAt: Date.now() });
-            }
+async function loadMovies() {
+    try {
+        const res = await fetch('filmek.json?v=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        movies = data.movies || [];
+        categories = data.categories || categories;
+        if (movies.length === 0) {
+            // egy alap film, ha üres
+            movies = [{
+                id: 1,
+                title: 'Eredet',
+                year: 2010,
+                description: 'Álomtolvajok különleges küldetése.',
+                videoUrl: 'https://www.youtube.com/embed/YoHD9XEInc0',
+                posterUrl: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
+                metaTitle: 'Eredet (2010) - előzetes',
+                metaDescription: 'Nézd meg az Eredet előzetesét. Christopher Nolan sci-fi thrillerje.',
+                slug: 'eredet-2010',
+                altText: 'Eredet filmplakát'
+            }];
         }
-        const adSnap = await adsRef.get();
-        if(adSnap.empty) {
-            await adsRef.add({ name: "Főoldal teteje", position: "home_top", width: "728", height: "90", code: "<img src='https://placehold.co/728x90/ff0000/white?text=REKLAM' style='width:100%'>", active: true });
-            await adsRef.add({ name: "Film oldalsáv", position: "film_sidebar", width: "300", height: "250", code: "<img src='https://placehold.co/300x250/00aaff/white?text=300x250' style='width:100%'>", active: true });
-            await adsRef.add({ name: "Kommentek alatt", position: "film_below_comments", width: "468", height: "60", code: "<img src='https://placehold.co/468x60/green/white?text=468x60' style='width:100%'>", active: true });
-        }
-        const userSnap = await usersRef.where('username', '==', 'admin').get();
-        if(userSnap.empty) {
-            await usersRef.add({ username: "admin", email: "admin@film.hu", password: "admin123", isAdmin: true, createdAt: Date.now() });
-        }
-        const movieSnap = await moviesRef.get();
-        if(movieSnap.empty) {
-            const now = Date.now();
-            const samples = [
-                { title: "Eredet", year: 2010, description: "Álomtolvajok különleges küldetése.", videoUrl: "https://www.youtube.com/embed/YoHD9XEInc0", posterUrl: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", categoryId: null, createdAt: now - 86400000, metaTitle: "Eredet (2010) - előzetes", metaDescription: "Nézd meg az Eredet előzetesét. Christopher Nolan sci-fi thrillerje.", slug: "eredet-2010", altText: "Eredet film plakát" },
-                { title: "A Sötét Lovag", year: 2008, description: "Batman és Joker harca.", videoUrl: "https://www.youtube.com/embed/EXeTwQWrcwY", posterUrl: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", categoryId: null, createdAt: now - 172800000, metaTitle: "A Sötét Lovag (2008) - előzetes", metaDescription: "A Sötét Lovag előzetese Christian Bale-lel.", slug: "sotet-lovag-2008", altText: "Batman plakát" }
-            ];
-            for(let m of samples) await moviesRef.add(m);
-        }
+    } catch(e) {
+        console.error('Hiba a filmek.json betöltésekor:', e);
+        movies = [];
     }
+}
 
-    async function getAdByPosition(position) {
-        const snap = await adsRef.where('position', '==', position).where('active', '==', true).get();
-        return snap.empty ? null : snap.docs[0].data();
+function saveMoviesToFile() {
+    const data = { movies, categories };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'filmek.json';
+    a.click();
+    alert('Letöltve! Töltsd fel a filmek.json fájlt a GitHubra (felülírva a régit).');
+}
+
+function renderHome() {
+    if (!movies.length) {
+        document.getElementById('app').innerHTML = '<p>Nincsenek filmek. Tölts fel egy filmek.json fájlt!</p>';
+        return;
     }
-
-    async function isMovieLiked(movieId) {
-        if(!currentUser) return false;
-        const snap = await likesRef.where('userId', '==', currentUser.id).where('movieId', '==', movieId).get();
-        return !snap.empty;
-    }
-
-    async function toggleLike(movieId) {
-        if(!currentUser) { alert("Jelentkezz be a like-hoz!"); return false; }
-        const existing = await likesRef.where('userId', '==', currentUser.id).where('movieId', '==', movieId).get();
-        if(existing.empty) await likesRef.add({ userId: currentUser.id, movieId, createdAt: Date.now() });
-        else await existing.docs[0].ref.delete();
-        return true;
-    }
-
-    async function getLikeCount(movieId) {
-        const snap = await likesRef.where('movieId', '==', movieId).get();
-        return snap.size;
-    }
-
-    async function addComment(movieId, text) {
-        if(!currentUser) { alert("Be kell jelentkezned!"); return false; }
-        if(!text.trim()) return false;
-        await commentsRef.add({ movieId, userId: currentUser.id, username: currentUser.username, text, date: new Date().toLocaleString(), createdAt: Date.now() });
-        return true;
-    }
-
-    async function getComments(movieId) {
-        const snap = await commentsRef.where('movieId', '==', movieId).orderBy('createdAt', 'desc').get();
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
-
-    async function getLatestMovies() {
-        const snap = await moviesRef.orderBy('createdAt', 'desc').limit(8).get();
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
-
-    async function getAllCategories() {
-        const snap = await categoriesRef.orderBy('createdAt').get();
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
-
-    function updateMetaForMovie(movie) {
-        if(!movie) return;
-        document.title = movie.metaTitle || movie.title;
-        let metaDesc = document.querySelector('meta[name="description"]');
-        if(!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = "description"; document.head.appendChild(metaDesc); }
-        metaDesc.content = movie.metaDescription || movie.description.substring(0,160);
-        let ogTitle = document.querySelector('meta[property="og:title"]');
-        if(!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property','og:title'); document.head.appendChild(ogTitle); }
-        ogTitle.content = movie.metaTitle || movie.title;
-        let ogDesc = document.querySelector('meta[property="og:description"]');
-        if(!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property','og:description'); document.head.appendChild(ogDesc); }
-        ogDesc.content = movie.metaDescription || movie.description;
-        let ogImage = document.querySelector('meta[property="og:image"]');
-        if(!ogImage) { ogImage = document.createElement('meta'); ogImage.setAttribute('property','og:image'); document.head.appendChild(ogImage); }
-        ogImage.content = movie.posterUrl;
-        let schemaScript = document.getElementById('schemaOrg');
-        if(schemaScript) schemaScript.remove();
-        const script = document.createElement('script');
-        script.id = 'schemaOrg';
-        script.type = 'application/ld+json';
-        script.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Movie", name: movie.title, datePublished: movie.year, description: movie.description, image: movie.posterUrl, url: window.location.href });
-        document.head.appendChild(script);
-    }
-
-    function resetMetaToDefault() {
-        document.title = "FilmStream Pro - Filmvilág";
-        let metaDesc = document.querySelector('meta[name="description"]');
-        if(metaDesc) metaDesc.content = "Nézd meg a legjobb filmelőzeteseket, kommentelj, like-olj!";
-    }
-
-    // Renderek
-    async function renderHome() {
-        const latest = await getLatestMovies();
-        const topAd = await getAdByPosition('home_top');
-        const topAdHtml = topAd ? `<div class="ad-space" style="max-width:${topAd.width}px; margin:0 auto;">${topAd.code}</div>` : '';
-        let carouselHtml = `
-            <div class="carousel-section">
-                <h2>🎞️ Legfrissebb filmek</h2>
-                <div class="carousel-container">
-                    <button class="carousel-btn carousel-btn-left" onclick="moveCarousel(-1)">❮</button>
-                    <div class="carousel-track" style="display: flex; gap: 1.5rem;">
-                        ${latest.map(m => `<div class="carousel-card" onclick="navigateTo('movie', '${m.id}')">
-                            <img class="carousel-poster" src="${m.posterUrl}" alt="${m.altText || m.title}" onerror="this.src='https://placehold.co/300x450/333/white?text=No+Poster'">
-                            <div class="carousel-info"><div class="carousel-title">${m.title} (${m.year})</div></div>
-                        </div>`).join('')}
-                    </div>
-                    <button class="carousel-btn carousel-btn-right" onclick="moveCarousel(1)">❯</button>
-                </div>
-            </div>
-        `;
-        const categories = await getAllCategories();
-        let catButtons = `<div class="categories-filter"><div class="cat-btn ${activeCategoryId === null ? 'active' : ''}" onclick="setCategoryFilter(null)">Összes</div>${categories.map(cat => `<div class="cat-btn ${activeCategoryId === cat.id ? 'active' : ''}" onclick="setCategoryFilter('${cat.id}')">${cat.name}</div>`).join('')}</div>`;
-        let filteredMovies = [];
-        if(activeCategoryId === null) {
-            const snap = await moviesRef.get();
-            filteredMovies = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } else {
-            const snap = await moviesRef.where('categoryId', '==', activeCategoryId).get();
-            filteredMovies = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        }
-        let gridHtml = `<div class="movies-grid">${filteredMovies.map(m => `<div class="movie-card" onclick="navigateTo('movie', '${m.id}')">
-            <img class="movie-poster" src="${m.posterUrl}" alt="${m.altText || m.title}" onerror="this.src='https://placehold.co/300x450/333/white?text=No+Poster'">
-            <div class="movie-info"><div class="movie-title">${m.title} (${m.year})</div></div>
-        </div>`).join('')}</div>`;
-        if(filteredMovies.length === 0) gridHtml = '<p>Nincs film ebben a kategóriában.</p>';
-        return `${topAdHtml}${carouselHtml}${catButtons}${gridHtml}`;
-    }
-
-    async function renderFilmPage(movieId) {
-        const movieDoc = await moviesRef.doc(movieId).get();
-        if(!movieDoc.exists) return "<h2>Film nem található</h2>";
-        const movie = { id: movieDoc.id, ...movieDoc.data() };
-        updateMetaForMovie(movie);
-        const liked = await isMovieLiked(movie.id);
-        const likeCount = await getLikeCount(movie.id);
-        const commentsList = await getComments(movie.id);
-        const sidebarAd = await getAdByPosition('film_sidebar');
-        const belowCommentsAd = await getAdByPosition('film_below_comments');
-        const categories = await getAllCategories();
-        const categoryName = categories.find(c => c.id === movie.categoryId)?.name || "Nincs";
-        let commentsHtml = commentsList.map(c => `<div class="comment"><span class="comment-user">${c.username}</span> <small>${c.date}</small><p>${c.text}</p></div>`).join('');
-        if(commentsHtml === '') commentsHtml = '<p>Még nincs hozzászólás.</p>';
-        return `
-            <div class="film-page">
-                <div class="film-main">
-                    <div class="video-wrapper">${movie.videoUrl.includes('youtube') ? `<iframe src="${movie.videoUrl}" frameborder="0" allowfullscreen></iframe>` : `<video controls src="${movie.videoUrl}"></video>`}</div>
-                    <h1>${movie.title} (${movie.year})</h1>
-                    <p><strong>Kategória:</strong> ${categoryName}</p>
-                    <p><strong>Leírás:</strong> ${movie.description}</p>
-                    <div><button class="like-btn" onclick="handleLike('${movie.id}')"><i class="fas fa-thumbs-up"></i> <span id="likeCount">${likeCount}</span></button></div>
-                    <hr><h3>💬 Hozzászólások</h3>
-                    <div id="commentList">${commentsHtml}</div>
-                    ${currentUser ? `<textarea id="newCommentText" rows="2" placeholder="Írd ide a véleményed..."></textarea><button onclick="submitComment('${movie.id}')">Komment küldése</button>` : `<p><a onclick="navigateTo('login')">Jelentkezz be</a> a kommenteléshez.</p>`}
-                </div>
-                <div class="film-sidebar">
-                    ${sidebarAd ? `<div class="ad-space" style="max-width:${sidebarAd.width}px;">${sidebarAd.code}</div>` : ''}
-                    <div class="admin-section" style="background:#1e1e1e; margin-top:1rem;"><small>📢 További tartalom</small></div>
-                </div>
-            </div>
-            ${belowCommentsAd ? `<div style="margin-top:2rem;"><div class="ad-space" style="max-width:${belowCommentsAd.width}px;">${belowCommentsAd.code}</div></div>` : ''}
-        `;
-    }
-
-    async function renderAdmin() {
-        if(!currentUser || currentUser.username !== 'admin') {
-            return `<div class="admin-section"><h2>Admin belépés</h2><input type="password" id="adminPass" placeholder="Admin jelszó"><br><button onclick="adminLogin()">Belépés</button><p>Alap jelszó: admin123</p></div>`;
-        }
-        const moviesSnap = await moviesRef.get();
-        const moviesList = moviesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const categories = await getAllCategories();
-        let moviesAdminHtml = moviesList.map(m => `<div class="reklam-item"><strong>${m.title}</strong> (${m.year}) - Kategória: ${categories.find(c=>c.id===m.categoryId)?.name || '?'}<button onclick="editMovie('${m.id}')">✏️ Szerkeszt</button><button onclick="deleteMovie('${m.id}')">🗑️ Töröl</button></div>`).join('');
-        let categoriesAdminHtml = categories.map(c => `<div class="category-item">${c.name}<button onclick="deleteCategory('${c.id}')">Törlés</button></div>`).join('');
-        const adsSnap = await adsRef.get();
-        const adsList = adsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        let adsAdminHtml = adsList.map(ad => `<div class="reklam-item"><b>${ad.name}</b> (${ad.position}) Méret: ${ad.width}x${ad.height} | Aktív: ${ad.active ? 'Igen' : 'Nem'}<button onclick="editAd('${ad.id}')">✏️</button><button onclick="toggleAdActive('${ad.id}')">Aktív/Ki</button></div>`).join('');
-        return `
-            <h1>🔧 Admin Panel</h1>
-            <div class="admin-section"><h2>🎬 Filmek</h2><button onclick="showAddMovieForm()">+ Új film</button><div id="movieFormContainer"></div><div>${moviesAdminHtml}</div></div>
-            <div class="admin-section"><h2>📂 Kategóriák</h2><input type="text" id="newCatName" placeholder="Új kategória neve"><button onclick="addCategory()">Hozzáadás</button><div>${categoriesAdminHtml}</div></div>
-            <div class="admin-section"><h2>📢 Reklámok</h2>${adsAdminHtml}<div id="adEditContainer"></div></div>
-        `;
-    }
-
-    // Admin műveletek (rövidítve, de működik)
-    window.adminLogin = async function() {
-        let pwd = document.getElementById('adminPass').value;
-        if(pwd === 'admin123') {
-            const snap = await usersRef.where('username', '==', 'admin').get();
-            if(!snap.empty) currentUser = { id: snap.docs[0].id, ...snap.docs[0].data() };
-            else { alert("Admin felhasználó nem található"); return; }
-            renderApp();
-        } else alert('Rossz jelszó');
-    };
-    window.editMovie = async function(id) {
-        const doc = await moviesRef.doc(id).get();
-        const m = doc.data();
-        let form = `<div><h3>Film szerkesztése</h3><input id="editTitle" value="${m.title}"><input id="editYear" value="${m.year}"><textarea id="editDesc">${m.description}</textarea><input id="editVideo" value="${m.videoUrl}"><input id="editPoster" value="${m.posterUrl}"><input id="editMetaTitle" value="${m.metaTitle || ''}"><textarea id="editMetaDesc">${m.metaDescription || ''}</textarea><input id="editSlug" value="${m.slug || ''}"><input id="editAlt" value="${m.altText || ''}"><button onclick="saveMovieEdit('${id}')">Mentés</button></div>`;
-        document.getElementById('movieFormContainer').innerHTML = form;
-    };
-    window.saveMovieEdit = async function(id) {
-        await moviesRef.doc(id).update({
-            title: document.getElementById('editTitle').value,
-            year: parseInt(document.getElementById('editYear').value),
-            description: document.getElementById('editDesc').value,
-            videoUrl: document.getElementById('editVideo').value,
-            posterUrl: document.getElementById('editPoster').value,
-            metaTitle: document.getElementById('editMetaTitle').value,
-            metaDescription: document.getElementById('editMetaDesc').value,
-            slug: document.getElementById('editSlug').value,
-            altText: document.getElementById('editAlt').value
-        });
-        renderApp();
-    };
-    window.deleteMovie = async function(id) { await moviesRef.doc(id).delete(); renderApp(); };
-    window.showAddMovieForm = function() {
-        let form = `<div><h3>Új film</h3><input id="newTitle" placeholder="Cím"><input id="newYear" placeholder="Év"><textarea id="newDesc" placeholder="Leírás"></textarea><input id="newVideo" placeholder="Videó URL"><input id="newPoster" placeholder="Poszter URL"><input id="newMetaTitle" placeholder="Meta cím"><textarea id="newMetaDesc" placeholder="Meta leírás"></textarea><input id="newSlug" placeholder="Slug"><input id="newAlt" placeholder="Alt szöveg"><button onclick="addNewMovie()">Hozzáadás</button></div>`;
-        document.getElementById('movieFormContainer').innerHTML = form;
-    };
-    window.addNewMovie = async function() {
-        await moviesRef.add({
-            title: document.getElementById('newTitle').value,
-            year: parseInt(document.getElementById('newYear').value),
-            description: document.getElementById('newDesc').value,
-            videoUrl: document.getElementById('newVideo').value,
-            posterUrl: document.getElementById('newPoster').value,
-            metaTitle: document.getElementById('newMetaTitle').value,
-            metaDescription: document.getElementById('newMetaDesc').value,
-            slug: document.getElementById('newSlug').value,
-            altText: document.getElementById('newAlt').value,
-            createdAt: Date.now()
-        });
-        renderApp();
-    };
-    window.addCategory = async function() {
-        let name = document.getElementById('newCatName').value.trim();
-        if(name) await categoriesRef.add({ name, createdAt: Date.now() });
-        renderApp();
-    };
-    window.deleteCategory = async function(id) { await categoriesRef.doc(id).delete(); renderApp(); };
-    window.editAd = async function(id) {
-        const doc = await adsRef.doc(id).get();
-        const ad = doc.data();
-        let form = `<div><input id="adCode${id}" value="${ad.code.replace(/"/g, '&quot;')}"><button onclick="saveAdCode('${id}')">Mentés</button></div>`;
-        document.getElementById('adEditContainer').innerHTML = form;
-    };
-    window.saveAdCode = async function(id) {
-        let code = document.getElementById(`adCode${id}`).value;
-        await adsRef.doc(id).update({ code });
-        renderApp();
-    };
-    window.toggleAdActive = async function(id) {
-        const doc = await adsRef.doc(id).get();
-        await adsRef.doc(id).update({ active: !doc.data().active });
-        renderApp();
-    };
-    window.handleLike = async function(movieId) { await toggleLike(movieId); renderApp(); };
-    window.submitComment = async function(movieId) {
-        let text = document.getElementById('newCommentText').value;
-        if(await addComment(movieId, text)) { document.getElementById('newCommentText').value = ''; renderApp(); }
-        else alert('Hiba vagy üres komment');
-    };
-    window.setCategoryFilter = function(catId) { activeCategoryId = catId; renderApp(); };
-    window.moveCarousel = function(dir) {
-        // egyszerűsítve, a carousel manuális léptetéséhez újra kell renderelni a főoldalt
-        // de a teljes működéshez kellene a track pozíció kezelés – a felhasználó kérésére ezt most nem részletezem, mert a fő funkció a SEO és adatbázis
-        alert('A carousel automatikus, de a nyilakkal is lehet léptetni a következő verzióban.');
-    };
-    function startCarousel() { /* autó carousel a későbbi verzióban */ }
-
-    // Navigáció hash alapján
-    function navigateTo(view, id = null) {
-        if(view === 'home') location.hash = '#home';
-        else if(view === 'movie' && id) location.hash = `#movie/${id}`;
-        else if(view === 'admin') location.hash = '#admin';
-        else if(view === 'login') location.hash = '#login';
-        else location.hash = '#home';
-    }
-
-    async function renderApp() {
-        const root = document.getElementById('appRoot');
-        const hash = location.hash.slice(1);
-        if(hash === 'home' || hash === '') {
-            resetMetaToDefault();
-            root.innerHTML = await renderHome();
-            setTimeout(() => { startCarousel(); }, 100);
-        } else if(hash.startsWith('movie/')) {
-            let id = hash.split('/')[1];
-            root.innerHTML = await renderFilmPage(id);
-        } else if(hash === 'admin') {
-            resetMetaToDefault();
-            root.innerHTML = await renderAdmin();
-        } else if(hash === 'login') {
-            resetMetaToDefault();
-            root.innerHTML = renderLoginRegister();
-        } else {
-            navigateTo('home');
-        }
-        updateUserPanel();
-    }
-
-    function renderLoginRegister() {
-        return `<div class="admin-section" style="max-width:400px; margin:0 auto;"><h2>Bejelentkezés</h2><input id="loginUser" placeholder="Felhasználónév"><input id="loginPass" type="password" placeholder="Jelszó"><button onclick="doLogin()">Belépés</button><hr><h3>Regisztráció</h3><input id="regUser" placeholder="Név"><input id="regEmail" placeholder="Email"><input id="regPass" type="password" placeholder="Jelszó"><button onclick="doRegister()">Regisztrálok</button><p><a onclick="navigateTo('home')">Vissza a főoldalra</a></p></div>`;
-    }
-
-    window.doLogin = async function() {
-        let uname = document.getElementById('loginUser').value;
-        let pwd = document.getElementById('loginPass').value;
-        const snap = await usersRef.where('username', '==', uname).where('password', '==', pwd).get();
-        if(!snap.empty) { currentUser = { id: snap.docs[0].id, ...snap.docs[0].data() }; navigateTo('home'); }
-        else alert('Hibás adatok');
-    };
-    window.doRegister = async function() {
-        let uname = document.getElementById('regUser').value;
-        let email = document.getElementById('regEmail').value;
-        let pwd = document.getElementById('regPass').value;
-        const existing = await usersRef.where('username', '==', uname).get();
-        if(!existing.empty) { alert('Létezik a név'); return; }
-        await usersRef.add({ username: uname, email, password: pwd, createdAt: Date.now() });
-        alert('Regisztráció sikeres, jelentkezz be!');
-        navigateTo('login');
-    };
-    window.logout = function() { currentUser = null; navigateTo('home'); };
-    function updateUserPanel() {
-        const panel = document.getElementById('userPanel');
-        if(currentUser) panel.innerHTML = `<span>👤 ${currentUser.username}</span> <button onclick="logout()">Kilépés</button>`;
-        else panel.innerHTML = `<button onclick="navigateTo('login')">Belépés / Reg</button>`;
-    }
-
-    window.navigateTo = navigateTo;
-    window.moveCarousel = moveCarousel;
-
-    // Indítás
-    loadDefaultData().then(() => {
-        window.addEventListener('hashchange', renderApp);
-        renderApp();
+    let html = `<div class="movies-grid">`;
+    movies.forEach(m => {
+        html += `<div class="movie-card" onclick="location.hash='movie/${m.id}'">
+                    <img class="movie-poster" src="${m.posterUrl}" alt="${m.altText || m.title}" onerror="this.src='https://placehold.co/300x450/333/white?text=No+Poster'">
+                    <div class="movie-info">${m.title} (${m.year})</div>
+                </div>`;
     });
+    html += `</div>`;
+    document.getElementById('app').innerHTML = html;
+}
+
+function renderMovie(id) {
+    const m = movies.find(x => x.id == id);
+    if (!m) {
+        renderHome();
+        return;
+    }
+    // SEO meta frissítés
+    document.title = m.metaTitle || m.title;
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = m.metaDescription || m.description;
+    
+    let html = `<button class="back-button" onclick="location.hash='home'">← Vissza a főoldalra</button>
+                <div class="film-page">
+                    <div class="video-wrapper"><iframe src="${m.videoUrl}" frameborder="0" allowfullscreen></iframe></div>
+                    <div>
+                        <h1>${m.title} (${m.year})</h1>
+                        <p>${m.description}</p>
+                    </div>
+                </div>`;
+    document.getElementById('app').innerHTML = html;
+}
+
+function renderAdmin() {
+    let html = `<div class="admin-section"><h2>Admin belépés</h2>
+                <input type="password" id="adminPass" placeholder="Jelszó">
+                <button onclick="adminLogin()">Belépés</button></div>`;
+    document.getElementById('app').innerHTML = html;
+}
+
+function adminLogin() {
+    let pwd = document.getElementById('adminPass').value;
+    if (pwd !== 'admin123') {
+        alert('Rossz jelszó');
+        return;
+    }
+    let form = `<div class="admin-section">
+        <h3>Filmek szerkesztése</h3>
+        ${movies.map(m => `<div style="margin:0.5rem 0;"><b>${m.title}</b> <button onclick="editMovie(${m.id})">✏️ Szerkeszt</button></div>`).join('')}
+        <button onclick="addMovie()">+ Új film</button>
+        <br><br>
+        <button onclick="saveMoviesToFile()">📥 Változtatások mentése (letöltés)</button>
+        <p style="margin-top:1rem;">A letöltött filmek.json fájlt töltsd fel a GitHubra (felülírva a régit).</p>
+    </div>`;
+    document.getElementById('app').innerHTML = form;
+}
+
+window.editMovie = (id) => {
+    let m = movies.find(x => x.id === id);
+    let form = `<div class="admin-section">
+        <h3>Film szerkesztése</h3>
+        <input id="title" value="${m.title.replace(/"/g, '&quot;')}" placeholder="Cím">
+        <input id="year" value="${m.year}" placeholder="Év">
+        <textarea id="desc" placeholder="Leírás">${m.description}</textarea>
+        <input id="video" value="${m.videoUrl}" placeholder="Videó URL (YouTube embed)">
+        <input id="poster" value="${m.posterUrl}" placeholder="Poszter URL">
+        <input id="metaTitle" value="${(m.metaTitle || '').replace(/"/g, '&quot;')}" placeholder="Meta cím (böngésző címsor)">
+        <textarea id="metaDesc" placeholder="Meta leírás (150-160 karakter, a Google ezt mutatja)">${m.metaDescription || ''}</textarea>
+        <input id="slug" value="${(m.slug || '').replace(/"/g, '&quot;')}" placeholder="Slug (url név)">
+        <input id="alt" value="${(m.altText || '').replace(/"/g, '&quot;')}" placeholder="Alt szöveg (kép leírása)">
+        <button onclick="updateMovie(${id})">Mentés</button>
+        <button onclick="renderAdmin()">Mégse</button>
+    </div>`;
+    document.getElementById('app').innerHTML = form;
+};
+
+window.updateMovie = (id) => {
+    let m = movies.find(x => x.id === id);
+    m.title = document.getElementById('title').value;
+    m.year = parseInt(document.getElementById('year').value);
+    m.description = document.getElementById('desc').value;
+    m.videoUrl = document.getElementById('video').value;
+    m.posterUrl = document.getElementById('poster').value;
+    m.metaTitle = document.getElementById('metaTitle').value;
+    m.metaDescription = document.getElementById('metaDesc').value;
+    m.slug = document.getElementById('slug').value;
+    m.altText = document.getElementById('alt').value;
+    renderAdmin();
+};
+
+window.addMovie = () => {
+    let newId = Date.now();
+    movies.push({
+        id: newId,
+        title: 'Új film',
+        year: 2024,
+        description: 'Ide írd a leírást',
+        videoUrl: '',
+        posterUrl: '',
+        metaTitle: '',
+        metaDescription: '',
+        slug: '',
+        altText: ''
+    });
+    renderAdmin();
+};
+
+window.addEventListener('hashchange', () => {
+    let hash = location.hash.slice(1);
+    if (hash === 'admin') renderAdmin();
+    else if (hash.startsWith('movie/')) renderMovie(parseInt(hash.split('/')[1]));
+    else renderHome();
+});
+
+loadMovies().then(() => {
+    if (!location.hash || location.hash === '#') location.hash = 'home';
+    else window.dispatchEvent(new Event('hashchange'));
+});
 </script>
 </body>
 </html>
