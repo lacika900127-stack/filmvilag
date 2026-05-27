@@ -1,0 +1,17 @@
+{
+  "movies": [
+    {
+      "id": 1,
+      "title": "Eredet",
+      "year": 2010,
+      "description": "Álomtolvajok különleges küldetése.",
+      "videoUrl": "https://www.youtube.com/embed/YoHD9XEInc0",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+      "metaTitle": "Eredet (2010) - előzetes",
+      "metaDescription": "Nézd meg az Eredet előzetesét. Christopher Nolan sci-fi thrillerje.",
+      "slug": "eredet-2010",
+      "altText": "Eredet filmplakát"
+    }
+  ],
+  "categories": ["Akció", "Dráma", "Sci-fi"]
+}
