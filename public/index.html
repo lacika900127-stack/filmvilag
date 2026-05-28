@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FilmVilág - Nézz filmeket online ingyen, nagy választékban! Streaming platform.">
+    <meta name="keywords" content="filmek online, ingyen filmek, film streaming, netflix alternatíva, filmek nézése">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Hungarian">
+    <meta name="author" content="FilmVilág">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="FilmVilág - Film Megosztó Platform">
+    <meta property="og:description" content="Nézz filmeket online ingyen, nagy választékban!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:image" content="https://yourdomain.com/logo.png">
+    <meta property="og:site_name" content="FilmVilág">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FilmVilág - Film Megosztó Platform">
+    <meta name="twitter:description" content="Nézz filmeket online ingyen!">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://yourdomain.com">
+    
+    <!-- Schema.org Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "FilmVilág",
+        "description": "Film megosztó és streaming platform",
+        "url": "https://yourdomain.com",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://yourdomain.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <title>FilmVilág - Ingyen Filmek Online | Film Streaming Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #e94560;
+            --secondary-color: #ff6b6b;
+            --bg-color: #1a1a2e;
+            --dark-bg: #16213e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, var(--dark-bg) 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex: 1;
+            margin: 0 2rem;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0.7rem 1rem;
+            border-radius: 25px;
+            color: #fff;
+            width: 280px;
+            transition: all 0.3s;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .admin-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Main */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Banner */
+        .banner-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .banner-slider {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 1rem 0;
+        }
+
+        .banner-slider::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .banner-slider::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .banner-slider::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .banner-film-card {
+            min-width: 320px;
+            height: 420px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .banner-film-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 40px rgba(233, 69, 96, 0.5);
+        }
+
+        .banner-poster {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        .banner-poster::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .banner-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            z-index: 10;
+        }
+
+        .banner-info h3 {
+            font-size: 1.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.5rem;
+        }
+
+        .banner-info p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        .category-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Film Grid */
+        .films-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .film-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .film-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 35px rgba(233, 69, 96, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        .film-poster {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .film-poster::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .film-info {
+            padding: 1rem;
+        }
+
+        .film-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .film-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+
+        .rating-number {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .film-genre {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .play-button {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
+        }
+
+        .play-button:hover {
+            opacity: 0.9;
+            box-shadow: 0 6px 18px rgba(233, 69, 96, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Ad Placeholder */
+        .ad-placeholder {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            margin: 2rem 0;
+            border-radius: 12px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .films-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+                margin: 0 1rem;
+            }
+
+            .search-bar {
+                width: 150px;
+                font-size: 0.9rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .banner-film-card {
+                min-width: 250px;
+                height: 350px;
+            }
+
+            .admin-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .header-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading & Empty States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo" id="siteLogo" onclick="goHome()">🎬 FilmVilág</div>
+            <nav>
+                <a href="#films">Filmek</a>
+                <a href="#categories">Kategóriák</a>
+                <input type="text" class="search-bar" id="searchInput" placeholder="Keress filmeket...">
+            </nav>
+            <button class="admin-btn" onclick="openAdminPanel()">🔐 Admin</button>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main id="mainContent">
+        <div class="hero">
+            <h1>🎬 Fedezd fel a legjobb filmeket</h1>
+            <p>Válassz az ezres film közül, és nézd meg azonnal ingyenesen!</p>
+        </div>
+
+        <!-- Banner Films -->
+        <div class="banner-section" id="bannerSection" style="display:none;">
+            <div class="section-title">🔥 Most Nézett Filmek</div>
+            <div class="banner-slider" id="bannerSlider"></div>
+        </div>
+
+        <!-- Top Ad -->
+        <div class="ad-placeholder" id="topAd">📺 Reklám hely (728x90)</div>
+
+        <!-- Categories -->
+        <div id="categoriesSection">
+            <div class="section-title">📂 Kategóriák</div>
+            <div class="category-filter" id="categoryFilter">
+                <button class="category-btn active" onclick="filterByCategory('all')">Összes Film</button>
+            </div>
+        </div>
+
+        <!-- Film Grid -->
+        <div id="filmsContainer" class="films-container"></div>
+
+        <!-- Bottom Ad -->
+        <div class="ad-placeholder" id="bottomAd">📺 Reklám hely (300x250)</div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FilmVilág. Minden jog fenntartva. | 
+            <a href="#">Adatvédelem</a> | 
+            <a href="#">Felhasználási Feltételek</a> | 
+            <a href="#">Kapcsolat</a>
+        </p>
+    </footer>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; overflow-y:auto;">
+        <div style="max-width:900px; margin:2rem auto; background:#1a1a2e; padding:2.5rem; border-radius:15px; border:1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h2 style="font-size:1.8rem;">🔐 Admin Panel</h2>
+                <button onclick="closeAdminPanel()" style="background:none; border:none; color:#fff; font-size:2rem; cursor:pointer; transition:color 0.3s;" onmouseover="this.style.color='#e94560'" onmouseout="this.style.color='#fff'">&times;</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="adminLoginForm">
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Jelszó:</label>
+                    <input type="password" id="adminPassword" placeholder="Írj be jelszót..." style="width:100%; padding:0.9rem; margin-bottom:1.5rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff; font-size:1rem;">
+                    <button onclick="adminLogin()" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #e94560 0%, #ff6b6b 100%); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1rem;">Bejelentkezés</button>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="adminPanel" style="display:none;">
+                <!-- Tabs -->
+                <div style="display:flex; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+                    <button onclick="showAdminSection('films')" style="flex:1; min-width:120px; padding:0.9rem; background:#e94560; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;">📽️ Filmek</button>
+                    <button onclick="showAdminSection('settings')" style="flex:1; min-width:120px; padding:0.9rem; background:#555; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;">⚙️ Beállítások</button>
+                    <button onclick="adminLogout()" style="flex:1; min-width:120px; padding:0.9rem; background:#666; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;">🚪 Kijelentkezés</button>
+                </div>
+
+                <!-- Films Management -->
+                <div id="filmsSection" style="display:none;">
+                    <h3 style="margin-bottom:1.5rem; color:#ff6b6b;">📝 Új Film Hozzáadása</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                        <input type="text" id="filmTitle" placeholder="Film Címe *" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        <input type="text" id="filmCategory" placeholder="Kategória (pl: Dráma) *" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    </div>
+                    <textarea id="filmDescription" placeholder="Film Leírása (200+ karakter ajánlott) *" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff; min-height:100px; margin-bottom:1.5rem; font-family:inherit;"></textarea>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                        <input type="text" id="filmLink" placeholder="Video Link *" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        <input type="number" id="filmYear" placeholder="Év (pl: 2024)" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        <input type="text" id="filmDirector" placeholder="Rendező" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem;">
+                        <input type="text" id="filmDuration" placeholder="Hossz (pl: 120 perc)" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        <input type="number" id="filmRating" placeholder="Értékelés (0-10)" step="0.1" min="0" max="10" style="padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    </div>
+
+                    <h4 style="margin-bottom:1.5rem; color:#ff6b6b; margin-top:2rem;">🔍 SEO Beállítások</h4>
+                    <input type="text" id="seoTitle" placeholder="Meta Title (max 60 karakter)" maxlength="60" style="width:100%; padding:0.8rem; margin-bottom:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    <input type="text" id="seoDescription" placeholder="Meta Description (max 160 karakter)" maxlength="160" style="width:100%; padding:0.8rem; margin-bottom:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    <input type="text" id="seoKeywords" placeholder="Keywords (vesszővel elválasztva: film, dráma, 2024)" style="width:100%; padding:0.8rem; margin-bottom:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    <input type="text" id="seoH1" placeholder="H1 Tag (főcím)" style="width:100%; padding:0.8rem; margin-bottom:1.5rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                    
+                    <button onclick="addFilm()" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #28a745 0%, #5cb85c 100%); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1rem;">✅ Film Hozzáadása</button>
+                </div>
+
+                <!-- Settings Management -->
+                <div id="settingsSection" style="display:none;">
+                    <h3 style="margin-bottom:1.5rem; color:#ff6b6b;">⚙️ Weboldal Beállítások</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                        <div>
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Weboldal Címe:</label>
+                            <input type="text" id="siteTitleInput" placeholder="pl: FilmVilág" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Leírás:</label>
+                            <input type="text" id="siteDescInput" placeholder="Rövid leírás" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff;">
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                        <div>
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Elsődleges Szín:</label>
+                            <input type="color" id="primaryColorInput" style="width:100%; padding:0.8rem; border-radius:8px; border:none; cursor:pointer;">
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Másodlagos Szín:</label>
+                            <input type="color" id="secondaryColorInput" style="width:100%; padding:0.8rem; border-radius:8px; border:none; cursor:pointer;">
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Háttérszín:</label>
+                            <input type="color" id="bgColorInput" style="width:100%; padding:0.8rem; border-radius:8px; border:none; cursor:pointer;">
+                        </div>
+                    </div>
+                    <button onclick="updateSettings()" style="width:100%; padding:0.9rem; background:linear-gradient(135deg, #28a745 0%, #5cb85c 100%); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1rem;">💾 Beállítások Mentése</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allFilms = [];
+        let currentCategory = 'all';
+        let adminLoggedIn = false;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFilms();
+            loadCategories();
+            checkAdminSession();
+            loadSettings();
+            document.getElementById('searchInput').addEventListener('keyup', searchFilms);
+        });
+
+        // Load Films
+        async function loadFilms() {
+            try {
+                const response = await fetch('/api/films');
+                allFilms = await response.json();
+                displayFilms(allFilms);
+                loadBannerFilms();
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        // Load Banner Films
+        async function loadBannerFilms() {
+            try {
+                const response = await fetch('/api/films/banner');
+                const bannerFilms = await response.json();
+                displayBannerFilms(bannerFilms);
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        // Display Banner Films
+        function displayBannerFilms(films) {
+            if (films.length === 0) return;
+
+            const slider = document.getElementById('bannerSlider');
+            const section = document.getElementById('bannerSection');
+            slider.innerHTML = '';
+
+            films.forEach(film => {
+                const card = document.createElement('div');
+                card.className = 'banner-film-card';
+                card.onclick = () => openFilm(film.id);
+                card.innerHTML = `
+                    <div class="banner-poster">
+                        ${film.poster_emoji || '🎬'}
+                        <div class="banner-info">
+                            <h3>${film.title}</h3>
+                            <p>${film.category}</p>
+                        </div>
+                    </div>
+                `;
+                slider.appendChild(card);
+            });
+
+            section.style.display = 'block';
+
+            // Auto-rotate banner every 4 seconds
+            setInterval(() => {
+                if (slider.children.length > 0) {
+                    const firstCard = slider.children[0];
+                    slider.appendChild(firstCard);
+                }
+            }, 4000);
+        }
+
+        // Display Films Grid
+        function displayFilms(films) {
+            const container = document.getElementById('filmsContainer');
+            container.innerHTML = '';
+
+            if (films.length === 0) {
+                container.innerHTML = '<div class="empty-state">📭 Nincsenek filmek ebben a kategóriában</div>';
+                return;
+            }
+
+            films.forEach(film => {
+                const card = document.createElement('div');
+                card.className = 'film-card';
+                card.onclick = () => openFilm(film.id);
+                card.innerHTML = `
+                    <div class="film-poster">${film.poster_emoji || '🎬'}</div>
+                    <div class="film-info">
+                        <div class="film-title" title="${film.title}">${film.title}</div>
+                        <div class="film-rating">
+                            <span class="stars">★★★★★</span>
+                            <span class="rating-number">${film.rating || 8.0}/10</span>
+                        </div>
+                        <div class="film-genre">${film.category}</div>
+                        <button class="play-button" onclick="event.stopPropagation(); openFilm(${film.id})">▶ Lejátszás</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Open Film
+        function openFilm(filmId) {
+            window.location.href = `/film.html?id=${filmId}`;
+        }
+
+        // Load Categories
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const categories = await response.json();
+                displayCategories(categories);
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        // Display Categories
+        function displayCategories(categories) {
+            const filter = document.getElementById('categoryFilter');
+
+            categories.forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = category;
+                btn.onclick = () => filterByCategory(category);
+                filter.appendChild(btn);
+            });
+        }
+
+        // Filter by Category
+        function filterByCategory(category) {
+            currentCategory = category;
+
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (category === 'all') {
+                displayFilms(allFilms);
+            } else {
+                const filtered = allFilms.filter(f => f.category === category);
+                displayFilms(filtered);
+            }
+        }
+
+        // Search
+        function searchFilms(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allFilms.filter(f =>
+                f.title.toLowerCase().includes(searchTerm) ||
+                f.category.toLowerCase().includes(searchTerm) ||
+                (f.description && f.description.toLowerCase().includes(searchTerm))
+            );
+            displayFilms(filtered);
+        }
+
+        // ==================== ADMIN ====================
+
+        function openAdminPanel() {
+            document.getElementById('adminModal').style.display = 'block';
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        async function checkAdminSession() {
+            try {
+                const response = await fetch('/api/admin/check-session');
+                const data = await response.json();
+                if (data.loggedIn) {
+                    adminLoggedIn = true;
+                    document.getElementById('adminLoginForm').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        async function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    adminLoggedIn = true;
+                    document.getElementById('adminLoginForm').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    alert('✅ Bejelentkezés sikeres!');
+                } else {
+                    alert('❌ Hibás jelszó!');
+                }
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        async function adminLogout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                adminLoggedIn = false;
+                document.getElementById('adminLoginForm').style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('adminPassword').value = '';
+                alert('✅ Kijelentkezés sikeres!');
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        function showAdminSection(section) {
+            document.getElementById('filmsSection').style.display = section === 'films' ? 'block' : 'none';
+            document.getElementById('settingsSection').style.display = section === 'settings' ? 'block' : 'none';
+        }
+
+        async function addFilm() {
+            const filmData = {
+                title: document.getElementById('filmTitle').value,
+                category: document.getElementById('filmCategory').value,
+                video_link: document.getElementById('filmLink').value,
+                description: document.getElementById('filmDescription').value,
+                year: parseInt(document.getElementById('filmYear').value) || new Date().getFullYear(),
+                director: document.getElementById('filmDirector').value || 'Ismeretlen',
+                duration: document.getElementById('filmDuration').value || 'N/A',
+                rating: parseFloat(document.getElementById('filmRating').value) || 8.0,
+                meta_title: document.getElementById('seoTitle').value,
+                meta_description: document.getElementById('seoDescription').value,
+                keywords: document.getElementById('seoKeywords').value,
+                h1_tag: document.getElementById('seoH1').value || document.getElementById('filmTitle').value,
+                poster_emoji: '🎬'
+            };
+
+            if (!filmData.title || !filmData.category || !filmData.video_link || !filmData.description) {
+                alert('❌ Kérjük, töltsd ki az összes kötelező mezőt (*)!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/films', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(filmData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Film sikeresen hozzáadva!');
+                    document.getElementById('filmTitle').value = '';
+                    document.getElementById('filmCategory').value = '';
+                    document.getElementById('filmLink').value = '';
+                    document.getElementById('filmDescription').value = '';
+                    loadFilms();
+                    loadCategories();
+                } else {
+                    alert('❌ Hiba!');
+                }
+            } catch (err) {
+                console.error('Hiba:', err);
+                alert('❌ Hiba a film hozzáadásakor!');
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const settings = await response.json();
+
+                document.getElementById('siteTitleInput').value = settings.site_title || 'FilmVilág';
+                document.getElementById('siteDescInput').value = settings.site_description || '';
+                document.getElementById('primaryColorInput').value = settings.primary_color || '#e94560';
+                document.getElementById('secondaryColorInput').value = settings.secondary_color || '#ff6b6b';
+                document.getElementById('bgColorInput').value = settings.bg_color || '#1a1a2e';
+
+                document.documentElement.style.setProperty('--primary-color', settings.primary_color);
+                document.documentElement.style.setProperty('--secondary-color', settings.secondary_color);
+                document.documentElement.style.setProperty('--bg-color', settings.bg_color);
+                
+                document.getElementById('siteLogo').textContent = '🎬 ' + settings.site_title;
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        async function updateSettings() {
+            const settings = {
+                site_title: document.getElementById('siteTitleInput').value,
+                site_description: document.getElementById('siteDescInput').value,
+                primary_color: document.getElementById('primaryColorInput').value,
+                secondary_color: document.getElementById('secondaryColorInput').value,
+                bg_color: document.getElementById('bgColorInput').value,
+                font_family: 'Segoe UI',
+                ad_positions: {}
+            };
+
+            try {
+                const response = await fetch('/api/admin/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Beállítások sikeresen mentve!');
+                    loadSettings();
+                } else {
+                    alert('❌ Hiba!');
+                }
+            } catch (err) {
+                console.error('Hiba:', err);
+            }
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
